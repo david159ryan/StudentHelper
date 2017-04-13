@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private List<String> timetableData;
 
-    enum InputStatus {
+    private enum InputStatus {
         OK(0),
         TOO_LONG(R.string.error_invalid_username_long),
         TOO_SHORT(R.string.error_invalid_username_short),
@@ -70,9 +70,9 @@ public class LoginActivity extends AppCompatActivity {
         InputStatus status = InputStatus.BLANK;
 
         if(id.matches(idRegex)){
-            task = new FetchStudentTimetableTask(id, this);
+            status = InputStatus.OK;
+            task = new FetchStudentTimetableTask(id);
             task.execute();
-
         }
         else if(id.length() == 0){
             status = InputStatus.BLANK;
@@ -83,12 +83,7 @@ public class LoginActivity extends AppCompatActivity {
         else if(id.length() > ID_MAX_LENGTH){
             status = InputStatus.TOO_LONG;
         }
-
         return status;
-    }
-
-    public void receiveTimeTableData(List<String> data){
-        timetableData = data;
     }
 
     private class SignInClickListener implements OnClickListener {
@@ -98,7 +93,8 @@ public class LoginActivity extends AppCompatActivity {
             InputStatus iDStatus = checkIDStatus(id);
             System.out.println("button clicked, ID is: " + id + "\nValid ID?\t" + iDStatus);
             if(iDStatus == InputStatus.OK){
-               ; //TODO load next activity or populate database
+                //TODO load next activity or populate database
+                System.out.println("Might need to do something here");
             }else{
                 mTextInputView.setError(getString(iDStatus.getCode()));
                 mTextInputView.invalidate();
@@ -110,11 +106,11 @@ public class LoginActivity extends AppCompatActivity {
         private String studentID;
         private String url;
         private Document doc;
-        private LoginActivity parent;
+        private List<String> tableEntries;
 
-        FetchStudentTimetableTask(String studentID, LoginActivity parent){
+
+        FetchStudentTimetableTask(String studentID){
             this.studentID = studentID;
-            this.parent = parent;
             System.out.println("in task constructor: " + studentID);
             url = getResources().getString(R.string.timetable_url);
         }
@@ -127,12 +123,29 @@ public class LoginActivity extends AppCompatActivity {
                         .post();
             } catch (IOException e) {
                 e.printStackTrace();
-                return Boolean.FALSE;
+                return false;
             }
-            List<String> tableEntries = grabTimeTableEntries();
-            parent.receiveTimeTableData(tableEntries);
-            System.out.println(Arrays.toString(tableEntries.toArray(new String[0])));
-            return Boolean.TRUE;
+            tableEntries = grabTimeTableEntries();
+            //System.out.println(Arrays.toString(tableEntries.toArray(new String[0])));
+            return tableEntries.size() > 0;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            if (success) {
+                throw(new RuntimeException("Need to load new activity here"));
+                //finish();
+            } else {
+                mTextInputView.setError(getString(InputStatus.UNREGISTERED.getCode()));
+                mTextInputView.requestFocus();
+                //mPasswordView.requestFocus();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            //showProgress(false);
         }
 
         private List<String> grabTimeTableEntries(){
