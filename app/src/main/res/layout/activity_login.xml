@@ -50,9 +50,17 @@
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="32dp"
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
+
+            <ProgressBar
+                android:id="@+id/login_progressBar"
+                style="?android:attr/progressBarStyle"
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"/>
 
         </LinearLayout>
     </ScrollView>

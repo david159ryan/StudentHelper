@@ -14,6 +14,9 @@
     <string name="error_field_required">This field is required</string>
     <string name="error_incorrect_username_unregistered">This username is unregistered</string>
 
+    <!-- Network Errors -->
+    <string name="error_website_unavailable">Could not reach host</string>
+    <string name="error_network_unavailable">No internet connection</string>
 
     <string name="timetable_url">"http://www.timetable.ul.ie/tt2.asp"</string>
     <string name="title_activity_test_login">Test Sign in</string>

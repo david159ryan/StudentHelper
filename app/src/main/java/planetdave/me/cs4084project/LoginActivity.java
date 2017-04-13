@@ -1,6 +1,10 @@
 package planetdave.me.cs4084project;
 
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,7 +12,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.jsoup.Jsoup;
@@ -18,24 +25,22 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity {
 
-    private static final int ID_MIN_LENGTH = 7;
-    private static final int ID_MAX_LENGTH = 8;
-
-    private List<String> timetableData;
-
     private enum InputStatus {
         OK(0),
         TOO_LONG(R.string.error_invalid_username_long),
         TOO_SHORT(R.string.error_invalid_username_short),
         UNREGISTERED(R.string.error_incorrect_username_unregistered),
+        NETWORK_UNAVAILABLE(R.string.error_network_unavailable),
+        WEBSITE_UNREACHABLE(R.string.error_website_unavailable),
         BLANK(R.string.error_field_required);
 
         private int code;
@@ -48,8 +53,15 @@ public class LoginActivity extends AppCompatActivity {
             return  code;
         }
     }
+
+    private static final int ID_MIN_LENGTH = 7;
+    private static final int ID_MAX_LENGTH = 8;
+
+    private List<String> timetableData;
     // UI references.
     private TextView mTextInputView;
+    private ProgressBar mProgressBar;
+    private Button mSignInButton;
 
     FetchStudentTimetableTask task = null;
 
@@ -58,10 +70,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Button mSignInButton = (Button) findViewById(R.id.sign_in_button);
+        mSignInButton = (Button) findViewById(R.id.sign_in_button);
         mSignInButton.setOnClickListener(new SignInClickListener());
 
-        mTextInputView = (TextView)findViewById(R.id.student_id_auto_text_view);
+        mTextInputView = (EditText)findViewById(R.id.student_id_auto_text_view);
+        mProgressBar = (ProgressBar)findViewById(R.id.login_progressBar);
+        mProgressBar.setEnabled(false);
     }
 
     private InputStatus checkIDStatus(String id) {
@@ -73,6 +87,7 @@ public class LoginActivity extends AppCompatActivity {
             status = InputStatus.OK;
             task = new FetchStudentTimetableTask(id);
             task.execute();
+            enableProgressBar();
         }
         else if(id.length() == 0){
             status = InputStatus.BLANK;
@@ -84,6 +99,20 @@ public class LoginActivity extends AppCompatActivity {
             status = InputStatus.TOO_LONG;
         }
         return status;
+    }
+
+    private void enableProgressBar() {
+        mProgressBar.setEnabled(true);
+        mProgressBar.setVisibility(View.VISIBLE);
+        mSignInButton.setClickable(false);
+        mTextInputView.setEnabled(false);
+    }
+
+    private void disableProgressBar() {
+        mProgressBar.setEnabled(false);
+        mProgressBar.setVisibility(View.INVISIBLE);
+        mSignInButton.setClickable(true);
+        mTextInputView.setEnabled(true);
     }
 
     private class SignInClickListener implements OnClickListener {
@@ -107,12 +136,22 @@ public class LoginActivity extends AppCompatActivity {
         private String url;
         private Document doc;
         private List<String> tableEntries;
-
+        private InputStatus requestStatus;
 
         FetchStudentTimetableTask(String studentID){
             this.studentID = studentID;
             System.out.println("in task constructor: " + studentID);
             url = getResources().getString(R.string.timetable_url);
+            requestStatus = InputStatus.OK;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if(!isNetworkAvailable()){
+                requestStatus = InputStatus.NETWORK_UNAVAILABLE;
+                cancel(true);
+            }
         }
 
         @Override
@@ -123,10 +162,14 @@ public class LoginActivity extends AppCompatActivity {
                         .post();
             } catch (IOException e) {
                 e.printStackTrace();
-                return false;
+                requestStatus = InputStatus.WEBSITE_UNREACHABLE;
+                cancel(true);
             }
             tableEntries = grabTimeTableEntries();
             //System.out.println(Arrays.toString(tableEntries.toArray(new String[0])));
+            if(tableEntries.size() == 0){
+                requestStatus = InputStatus.UNREGISTERED;
+            }
             return tableEntries.size() > 0;
         }
 
@@ -134,18 +177,34 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(final Boolean success) {
 
             if (success) {
-                throw(new RuntimeException("Need to load new activity here"));
-                //finish();
-            } else {
-                mTextInputView.setError(getString(InputStatus.UNREGISTERED.getCode()));
-                mTextInputView.requestFocus();
-                //mPasswordView.requestFocus();
+                finish();
+                Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
+                intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
+            }else{
+                reportRequestFailure();
             }
+        }
+
+        private void reportRequestFailure(){
+            mTextInputView.setError(getString(requestStatus.getCode()));
+            disableProgressBar();
+            mTextInputView.requestFocus();
+            ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                    .showSoftInput(mTextInputView, InputMethodManager.SHOW_IMPLICIT);
         }
 
         @Override
         protected void onCancelled() {
-            //showProgress(false);
+            reportRequestFailure();
+        }
+
+        private boolean isNetworkAvailable() {
+            ConnectivityManager connectivityManager
+                    = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
         }
 
         private List<String> grabTimeTableEntries(){
