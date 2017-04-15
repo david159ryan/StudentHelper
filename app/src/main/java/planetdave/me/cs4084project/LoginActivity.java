@@ -131,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private class FetchStudentTimetableTask extends AsyncTask<Void, String, Boolean>{
+    private class FetchStudentTimetableTask extends AsyncTask<Void, Void, Boolean>{
         private String studentID;
         private String url;
         private Document doc;

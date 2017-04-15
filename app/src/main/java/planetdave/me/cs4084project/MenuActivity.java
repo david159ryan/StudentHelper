@@ -14,9 +14,7 @@ import java.util.Arrays;
 
 public class MenuActivity extends AppCompatActivity implements ListView.OnItemClickListener {
 
-    private ArrayList<String> menuItemsList;
-    private ArrayAdapter<String> mMenuListAdapter;
-    private ListView mMenuListView;
+
 
 
     private enum MenuItem {
@@ -42,8 +40,13 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        ArrayList<String> menuItemsList;
+        ArrayAdapter<String> mMenuListAdapter;
+        ListView mMenuListView;
         menuItemsList = new ArrayList<>();
 
         for(MenuItem m : MenuItem.values()){
