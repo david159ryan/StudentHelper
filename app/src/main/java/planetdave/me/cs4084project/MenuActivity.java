@@ -1,20 +1,68 @@
 package planetdave.me.cs4084project;
 
+
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
-public class MenuActivity extends AppCompatActivity {
+public class MenuActivity extends AppCompatActivity implements ListView.OnItemClickListener {
+
+    private ArrayList<String> menuItemsList;
+    private ArrayAdapter<String> mMenuListAdapter;
+    private ListView mMenuListView;
+
+
+    private enum MenuItem {
+        SULIS("Sulis", SulisActivity.class),
+        PDF_Reader("PDF Reader", PDFReaderActivity.class);
+
+        private String text;
+        private Class activity;
+
+        MenuItem(String text, Class activity){
+            this.text = text;
+            this.activity = activity;
+        }
+
+        public Class getActivity() {
+            return activity;
+        }
+
+        public String getText(){
+            return text;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+        menuItemsList = new ArrayList<>();
+
+        for(MenuItem m : MenuItem.values()){
+            menuItemsList.add(m.getText());
+        }
+        //dataStuff();
+
+        mMenuListView = (ListView)findViewById(R.id.menu_list_view);
+        mMenuListView.setClickable(true);
+        mMenuListAdapter = new ArrayAdapter<>(this,
+                R.layout.layout_list_element,
+                R.id.menu_selection,
+                menuItemsList);
+        mMenuListView.setAdapter(mMenuListAdapter);
+        mMenuListView.setOnItemClickListener(this);
+    }
+
+    //TODO this may be better handled somewhere else. leaving it here for now
+    private void dataStuff() {
         String dataKey = getString(R.string.student_timetable_data_key);
         System.out.println("data key" + dataKey);
 
@@ -29,8 +77,15 @@ public class MenuActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        //this.moveTaskToBack(true);
-        Intent i = new Intent(this, SulisActivity.class);
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        System.out.println("here");
+        Intent i = new Intent(this, MenuItem.values()[position].getActivity());
         startActivity(i);
     }
+
+
 }
