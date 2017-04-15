@@ -21,14 +21,15 @@
     <string name="timetable_url">"http://www.timetable.ul.ie/tt2.asp"</string>
     <string name="title_activity_test_login">Test Sign in</string>
 
-    <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <!-- Bundle key values -->
+    <string name="student_timetable_data_key">data</string>
+
+    <!-- Sulis Values -->
+    <string name="sulis_url">https://sulis.ul.ie/portal/pda/?force.login=yes</string>
+    <string name="sulis_domain">https://sulis.ul.ie/</string>
+
+    <string name="title_activity_pdfreader">PDFReaderActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

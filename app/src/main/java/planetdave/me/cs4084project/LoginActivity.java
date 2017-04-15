@@ -135,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
         private String studentID;
         private String url;
         private Document doc;
-        private List<String> tableEntries;
+        private ArrayList<String> tableEntries;
         private InputStatus requestStatus;
 
         FetchStudentTimetableTask(String studentID){
@@ -180,11 +180,14 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
                 Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
                 intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+                String dataKey = getString(R.string.student_timetable_data_key);
+                intent.putExtra(dataKey,tableEntries);
                 startActivity(intent);
 
             }else{
                 reportRequestFailure();
             }
+            task = null;
         }
 
         private void reportRequestFailure(){
@@ -207,8 +210,8 @@ public class LoginActivity extends AppCompatActivity {
             return activeNetworkInfo != null && activeNetworkInfo.isConnected();
         }
 
-        private List<String> grabTimeTableEntries(){
-            List<String> tableEntries = new ArrayList<>();
+        private ArrayList<String> grabTimeTableEntries(){
+            ArrayList<String> tableEntries = new ArrayList<>();
             Elements paragraphs = doc.getElementsByTag("p");
             for(Element e : paragraphs){
                 String tableEntry = e.toString();
