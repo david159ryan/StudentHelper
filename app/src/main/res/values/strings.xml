@@ -28,6 +28,8 @@
     <string name="sulis_url">https://sulis.ul.ie/portal/pda/?force.login=yes</string>
     <string name="sulis_domain">sulis.ul.ie</string>
     <string name="sulis_cookie_name">SAKAIID</string>
+    <string name="sulis_directory">/StudentHelper/Sulis/</string>
+
     <!-- PDF Reader values -->
     <string name="title_activity_pdfreader">PDFReaderActivity</string>
     <string name ="pdf_key">pdfKey</string>

@@ -23,15 +23,15 @@ public class PDFReaderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pdfreader);
 
         String pdfSource = getIntent().getStringExtra(getString(R.string.pdf_key));
-        //System.out.println("In pdf activity:\n\t" + pdfSource + "\n");
+        System.out.println("In pdf activity:\n\t" + pdfSource + "\n");
 
         WebView webview=(WebView)findViewById(R.id.pdf_webview);
         webview.getSettings().setJavaScriptEnabled(true);
         webview.getSettings().setAllowUniversalAccessFromFileURLs(true);
 
         try {
-            webview.loadUrl(getApplicationContext().getFilesDir() +
-                URLEncoder.encode(pdfSource.toString(), "UTF-8"));
+            webview.loadUrl("file:///android_asset/pdfjs/web/viewer.html?file=" +
+                URLEncoder.encode(pdfSource, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
