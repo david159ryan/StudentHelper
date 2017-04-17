@@ -14,9 +14,6 @@ import java.util.Arrays;
 
 public class MenuActivity extends AppCompatActivity implements ListView.OnItemClickListener {
 
-
-
-
     private enum MenuItem {
         SULIS("Sulis", SulisActivity.class),
         PDF_Reader("PDF Reader", PDFReaderActivity.class);
@@ -47,6 +44,7 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
         ArrayList<String> menuItemsList;
         ArrayAdapter<String> mMenuListAdapter;
         ListView mMenuListView;
+
         menuItemsList = new ArrayList<>();
 
         for(MenuItem m : MenuItem.values()){
@@ -85,7 +83,6 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        System.out.println("here");
         Intent i = new Intent(this, MenuItem.values()[position].getActivity());
         startActivity(i);
     }

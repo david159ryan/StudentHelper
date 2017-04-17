@@ -1,6 +1,7 @@
 package planetdave.me.cs4084project;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -45,29 +46,34 @@ import java.util.Map;
 
 public class SulisActivity extends AppCompatActivity {
     private long mDownloadedFileID;
-    DownloadManager dm;
+    private DownloadManager dm;
+    private boolean bSulisDirectoryExists;
+    private WebView webview;
+
+    //// TODO: 16/04/2017 handle more than just PDFs
+
+    @SuppressLint("SetJavascriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sulis);
-        checkAndRequestExternalPermissions();
-        System.out.println(Environment.getExternalStorageState());
-        File folder = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) +
-                getString(R.string.sulis_directory) );
 
-        System.out.println(folder.getAbsolutePath());
-        System.out.println("folder made successfully: " + folder.mkdirs());
-        //if(checkAndRequestExternalPermissions()){
-        //}
+        /* check if we have write permission and if sulis directory exists .
+         * Sulis directory should be /Documents/StudentHelper/Sulis
+         * */
+        if(checkAndRequestExternalPermissions()){
+            File folder = new File(getSulisDirectory() );
+            bSulisDirectoryExists = folder.exists();
+            if(!bSulisDirectoryExists){
+                bSulisDirectoryExists = folder.mkdirs();
+            }
+        }
 
-
-        final WebView webview = (WebView)findViewById(R.id.sulis_webview);
+        webview = (WebView)findViewById(R.id.sulis_webview);
         WebSettings webSettings = webview.getSettings();
         webSettings.setBuiltInZoomControls(true);
         webSettings.setJavaScriptEnabled(true);
-        webview.setWebViewClient(new SulisWebViewClient());
+        webview.setWebViewClient(new SulisWebViewClient(this));
 
         webview.loadUrl(getString(R.string.sulis_url));
 
@@ -81,14 +87,17 @@ public class SulisActivity extends AppCompatActivity {
                     public void onReceive(Context ctxt, Intent intent) {
                         Uri mostRecentDownload =
                                 dm.getUriForDownloadedFile(mDownloadedFileID);
-
-
                         launchPdfActivity(mostRecentDownload.toString());
                     }
                 };
                 registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
             }
         });
+    }
+
+    String getSulisDirectory(){
+        return Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOCUMENTS) + getString(R.string.sulis_directory);
     }
 
     void launchPdfActivity(String target) {
@@ -101,6 +110,7 @@ public class SulisActivity extends AppCompatActivity {
                                 String mimeType, long contentLength) {
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
 
+        /* got most of this from stackoverflow */
         request.setMimeType(mimeType);
         //------------------------COOKIE!!------------------------
         String cookies = CookieManager.getInstance().getCookie(url);
@@ -111,10 +121,13 @@ public class SulisActivity extends AppCompatActivity {
         request.setTitle(URLUtil.guessFileName(url, contentDisposition, mimeType));
         request.allowScanningByMediaScanner();
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(
-                Environment.DIRECTORY_DOCUMENTS,
-                getString(R.string.sulis_directory) +
-                       URLUtil.guessFileName(url, contentDisposition, mimeType));
+        if(bSulisDirectoryExists){
+            request.setDestinationInExternalPublicDir(
+                    Environment.DIRECTORY_DOCUMENTS,            /* Documents Folder */
+                    getString(R.string.sulis_directory) +       /* Sulis Sub Dir */
+                            URLUtil.guessFileName(url, contentDisposition, mimeType));
+            System.out.println(getSulisDirectory() + " : " + bSulisDirectoryExists);
+        }
         dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         mDownloadedFileID = dm.enqueue(request);
         Toast.makeText(getApplicationContext(), "Downloading File", Toast.LENGTH_LONG).show();
@@ -134,37 +147,49 @@ public class SulisActivity extends AppCompatActivity {
         return permissionCheck == PermissionChecker.PERMISSION_GRANTED;
     }
 
-    private class SulisWebViewClient extends WebViewClient {
+}
+class SulisWebViewClient extends WebViewClient {
 
-        @Override @SuppressWarnings("deprecation")
-        public boolean shouldOverrideUrlLoading(WebView view, String url){
-            Uri uri = Uri.parse(url);
-            return handleUrlLoading(uri);
-        }
+    private SulisActivity parent;
+    public SulisWebViewClient(SulisActivity parent) {
+        this.parent = parent;
+    }
 
-        @TargetApi(Build.VERSION_CODES.N)
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            Uri uri = request.getUrl();
-            return handleUrlLoading(uri);
-        }
+    @Override @SuppressWarnings("deprecation")
+    public boolean shouldOverrideUrlLoading(WebView view, String url){
+        Uri uri = Uri.parse(url);
+        return handleUrlLoading(uri);
+    }
 
-        private boolean handleUrlLoading(Uri uri) {
-            boolean shouldOverride = true;
+    @TargetApi(Build.VERSION_CODES.N)
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+        Uri uri = request.getUrl();
+        return handleUrlLoading(uri);
+    }
+
+    private boolean handleUrlLoading(Uri uri) {
+        boolean shouldOverride = true;
 
             /* Stops internal SULIS links being opened in external app */
-            if( uri.getHost().equals(getString(R.string.sulis_domain))){
-                shouldOverride = false;
-                /* Open new PDF Activity if file is PDF */
+        if( uri.getHost().equals(parent.getBaseContext().getString(R.string.sulis_domain))){
+            shouldOverride = false;
+            if (uri.getLastPathSegment().endsWith(".pdf")){
+                File fileCheck = new File(parent.getSulisDirectory(), uri.getLastPathSegment());
+                /* Check if file exists, if so launch it in PDFReaderActivity */
+                if(fileCheck.exists()){
+                    System.out.println("file exists");
+                    parent.launchPdfActivity(fileCheck.getAbsolutePath());
+                    shouldOverride = true;
+                }else{
+                    System.out.println("file doesn't exists");
+                }
             }
-            if (uri.toString().endsWith(".pdf")){
-                //   DownloadFileTask task = new DownloadFileTask();
-                //  task.execute(uri.toString());
-            }
-            return shouldOverride;
         }
-
-
-
+        System.out.println("should override? " + shouldOverride);
+        return shouldOverride;
     }
+
+
+
 }

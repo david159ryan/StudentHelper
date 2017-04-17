@@ -2,7 +2,6 @@ package planetdave.me.cs4084project;
 
 
 import android.annotation.SuppressLint;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.webkit.WebView;
