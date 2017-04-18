@@ -16,7 +16,8 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
 
     private enum MenuItem {
         SULIS("Sulis", SulisActivity.class),
-        PDF_Reader("PDF Reader", PDFReaderActivity.class);
+        PDF_READER("PDF Reader", PDFReaderActivity.class),
+        TIMETABLE("Timetable", TimetableActivity.class);
 
         private String text;
         private Class activity;

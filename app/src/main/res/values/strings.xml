@@ -32,9 +32,39 @@
 
     <!-- PDF Reader values -->
     <string name="title_activity_pdfreader">PDFReaderActivity</string>
-    <string name ="pdf_key">pdfKey</string>
+    <string name="pdf_key">pdfKey</string>
 
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_timetable">TimetableActivity</string>
+
+
+
+    <!-- Timetable times -->
+    <string name="tt_09_text">09:00</string>
+    <string name="tt_10_text">10:00</string>
+    <string name="tt_11_text">11:00</string>
+    <string name="tt_12_text">12:00</string>
+    <string name="tt_13_text">13:00</string>
+    <string name="tt_14_text">14:00</string>
+    <string name="tt_15_text">15:00</string>
+    <string name="tt_16_text">16:00</string>
+    <string name="tt_17_text">17:00</string>
+
+    <!-- Timetable days long-->
+    <string name="tt_mon_long">Monday</string>
+    <string name="tt_tue_long">Tuesday</string>
+    <string name="tt_wed_long">Wednesday</string>
+    <string name="tt_thu_long">Thursday</string>
+    <string name="tt_fri_long">Friday</string>
+
+    <!-- Timetable days short-->
+    <string name="tt_mon_short">Mon</string>
+    <string name="tt_tue_short">Tue</string>
+    <string name="tt_wed_short">Wed</string>
+    <string name="tt_thu_short">Thu</string>
+    <string name="tt_fri_short">Fri</string>
+
+
 
 </resources>
