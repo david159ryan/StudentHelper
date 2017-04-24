@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">Student Helper</string>
 
+    <string name="shared_preferences">prefs</string>
+    <string name="current_user_key">currentUser</string>
+    <string name="no_current_user">NONE</string>
+    <string name="first_run">firstrun</string>
+    <string name="database_present">databasePresent</string>
+
+
+    <string name="database_name">shdb</string>
+
+
     <!-- Strings related to login -->
     <string name="prompt_student_id">Enter Student ID</string>
     <string name="action_sign_in">Sign in</string>
@@ -64,6 +74,12 @@
     <string name="tt_wed_short">Wed</string>
     <string name="tt_thu_short">Thu</string>
     <string name="tt_fri_short">Fri</string>
+
+    <!-- Timetable entry fields -->
+    <string name="module">CS4084</string>
+    <string name="type">LAB</string>
+    <string name="group">2A</string>
+    <string name="room">CSG001</string>
 
 
 

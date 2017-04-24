@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 class TimetableHTMLParser {
 
     private static String timeRegex =
-            "[0-2]{1}[0-9]{1}:00";
+            "[0-2]{1}[0-9]{1}(?=(:00))";
     private static String moduleRegex =
             "(?<=(<br>\\s))[A-Z]{2}[1-9]{1}[0-9]{3}(?=(\\s<font>))";
     private static String roomRegex =

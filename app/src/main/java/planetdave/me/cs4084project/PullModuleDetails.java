@@ -123,7 +123,7 @@ public class PullModuleDetails {
         try {
             Scanner in = new Scanner(file);
             while(in.hasNext()){
-                result.append(in.nextLine() + " ");
+                result.append(in.nextLine()).append(" ");
             }
             in.close();
         } catch (FileNotFoundException e) {

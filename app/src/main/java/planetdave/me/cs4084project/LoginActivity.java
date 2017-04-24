@@ -3,6 +3,7 @@ package planetdave.me.cs4084project;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -54,6 +55,11 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private static String userKey;
+    private static String noUser;
+    private static String firstRun;
+    private static String databasePresent;
+
     private static final int ID_MIN_LENGTH = 7;
     private static final int ID_MAX_LENGTH = 8;
 
@@ -62,20 +68,42 @@ public class LoginActivity extends AppCompatActivity {
     private TextView mTextInputView;
     private ProgressBar mProgressBar;
     private Button mSignInButton;
+    private SharedPreferences sPrefs;
 
     FetchStudentTimetableTask task = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        userKey = getString(R.string.current_user_key);
+        noUser = getString(R.string.no_current_user);
+        firstRun = getString(R.string.first_run);
+        databasePresent = getString(R.string.database_present);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        sPrefs = getSharedPreferences(getString(R.string.shared_preferences),
+                MODE_PRIVATE);
+
+        if(sPrefs.getBoolean(firstRun, true)) {
+            initPrefs();
+        } else if(!sPrefs.getString(userKey, noUser).equals(noUser)){
+            launchMenuActivity();
+            finish();
+        }
 
         mSignInButton = (Button) findViewById(R.id.sign_in_button);
         mSignInButton.setOnClickListener(new SignInClickListener());
 
-        mTextInputView = (EditText)findViewById(R.id.student_id_auto_text_view);
+        mTextInputView = (TextView)findViewById(R.id.student_id_auto_text_view);
         mProgressBar = (ProgressBar)findViewById(R.id.login_progressBar);
         mProgressBar.setEnabled(false);
+    }
+
+    private void initPrefs() {
+        sPrefs.edit().putString(userKey, noUser).apply();
+        sPrefs.edit().putBoolean(firstRun, false).apply();
+        sPrefs.edit().putBoolean(databasePresent, false).apply();
     }
 
     private InputStatus checkIDStatus(String id) {
@@ -115,16 +143,29 @@ public class LoginActivity extends AppCompatActivity {
         mTextInputView.setEnabled(true);
     }
 
+    private void launchMenuActivity(String id, ArrayList<String> tableEntries){
+        sPrefs.edit().putString(getString(R.string.current_user_key), id).apply();
+        Intent intent = new Intent(this, MenuActivity.class);
+        intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+        String dataKey = getString(R.string.student_timetable_data_key);
+        intent.putExtra(dataKey,tableEntries);
+        startActivity(intent);
+    }
+
+    private void launchMenuActivity(){
+        Intent intent = new Intent(this, MenuActivity.class);
+        intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+
+        startActivity(intent);
+    }
+
     private class SignInClickListener implements OnClickListener {
         @Override
         public void onClick(View v) {
             String id = mTextInputView.getText().toString();
             InputStatus iDStatus = checkIDStatus(id);
             System.out.println("button clicked, ID is: " + id + "\nValid ID?\t" + iDStatus);
-            if(iDStatus == InputStatus.OK){
-                //TODO load next activity or populate database
-                System.out.println("Might need to do something here");
-            }else{
+            if(iDStatus != InputStatus.OK){
                 mTextInputView.setError(getString(iDStatus.getCode()));
                 mTextInputView.invalidate();
             }
@@ -178,11 +219,7 @@ public class LoginActivity extends AppCompatActivity {
 
             if (success) {
                 finish();
-                Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
-                intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
-                String dataKey = getString(R.string.student_timetable_data_key);
-                intent.putExtra(dataKey,tableEntries);
-                startActivity(intent);
+                launchMenuActivity(studentID, tableEntries);
 
             }else{
                 reportRequestFailure();
@@ -212,11 +249,16 @@ public class LoginActivity extends AppCompatActivity {
 
         private ArrayList<String> grabTimeTableEntries(){
             ArrayList<String> tableEntries = new ArrayList<>();
-            Elements paragraphs = doc.getElementsByTag("p");
-            for(Element e : paragraphs){
-                String tableEntry = e.toString();
-                if(TimetableHTMLParser.isValidTimetableHTML(tableEntry)){
-                    tableEntries.add(TimetableHTMLParser.parseTimetableEntry(tableEntry));
+            Element lastRow = doc.getElementsByTag("tr").last();
+            Elements days = lastRow.getElementsByTag("td");
+            for(int i = 0; i < 5; i++){
+                Elements paragraphs = days.get(i).getElementsByTag("p");
+                for(Element e : paragraphs){
+                    String tableEntry = e.toString();
+                    if(TimetableHTMLParser.isValidTimetableHTML(tableEntry)){
+                        tableEntries.add(studentID + "," + i + ","
+                                + TimetableHTMLParser.parseTimetableEntry(tableEntry));
+                    }
                 }
             }
             return tableEntries;

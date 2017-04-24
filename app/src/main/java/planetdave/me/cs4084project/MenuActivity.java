@@ -1,7 +1,11 @@
 package planetdave.me.cs4084project;
 
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +18,8 @@ import java.util.Arrays;
 
 public class MenuActivity extends AppCompatActivity implements ListView.OnItemClickListener {
 
+    private SharedPreferences sPrefs;
+    private DatabaseHelper db;
     private enum MenuItem {
         SULIS("Sulis", SulisActivity.class),
         PDF_READER("PDF Reader", PDFReaderActivity.class),
@@ -42,6 +48,15 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
+        sPrefs = getSharedPreferences(getString(R.string.shared_preferences),
+                MODE_PRIVATE);
+
+        db = new DatabaseHelper(getApplicationContext());
+
+        if(!sPrefs.getBoolean(getString(R.string.database_present), false)){
+            populateDatabase();
+        }
+
         ArrayList<String> menuItemsList;
         ArrayAdapter<String> mMenuListAdapter;
         ListView mMenuListView;
@@ -64,17 +79,25 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
     }
 
     //TODO this may be better handled somewhere else. leaving it here for now
-    private void dataStuff() {
+    private void populateDatabase() {
         String dataKey = getString(R.string.student_timetable_data_key);
-        System.out.println("data key" + dataKey);
-
-
-        ArrayList<String> studentData;
-        studentData = getIntent().getExtras().getStringArrayList(dataKey);
+        SQLiteDatabase database = db.getWritableDatabase();
+        ArrayList<String> studentData = getIntent().getExtras().getStringArrayList(dataKey);
         assert studentData != null;
-        System.out.println(Arrays.toString(studentData.toArray(new String[0])));
+        ContentValues cv = new ContentValues();
 
-        System.out.println("IN Menu Activity");
+        String titles[] = {"_id","_day", "_start", "_end", "_module", "_type", "_group", "_room"};
+
+        for(String s : studentData){
+            String values[] = s.split(",");
+           // cv.put("id", sPrefs.getString(getString(R.string.current_user_key), ""));
+            for(int i = 0; i < titles.length; i++){
+                cv.put(titles[i], values[i]);
+            }
+            database.insert("timetable", "_id", cv);
+        }
+        sPrefs.edit().putBoolean(getString(R.string.database_present), true).apply();
+        System.out.println(Arrays.toString(studentData.toArray(new String[0])));
     }
 
     @Override
@@ -87,6 +110,5 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
         Intent i = new Intent(this, MenuItem.values()[position].getActivity());
         startActivity(i);
     }
-
 
 }

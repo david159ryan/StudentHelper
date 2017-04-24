@@ -3,15 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     tools:context="planetdave.me.cs4084project.TimetableActivity">
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp">
 
         <LinearLayout
             android:layout_width="50dp"
@@ -118,16 +111,16 @@
         </LinearLayout>
 
         <HorizontalScrollView
+            android:id="@+id/tt_scroll_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="8dp">
 
             <include
-                layout="@layout/layout_timetable_frame"
+                layout="@layout/layout_timetable_grid"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
         </HorizontalScrollView>
-    </LinearLayout>
 
 </LinearLayout>
