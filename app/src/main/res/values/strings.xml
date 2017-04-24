@@ -34,6 +34,12 @@
     <!-- Bundle key values -->
     <string name="student_timetable_data_key">data</string>
 
+    <!-- Menu values -->
+    <string name="menu_header">UL Student Helper</string>
+    <string name="menu_logout">Logout</string>
+
+
+
     <!-- Sulis Values -->
     <string name="sulis_url">https://sulis.ul.ie/portal/pda/?force.login=yes</string>
     <string name="sulis_domain">sulis.ul.ie</string>
@@ -47,7 +53,6 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_timetable">TimetableActivity</string>
-
 
 
     <!-- Timetable times -->
@@ -80,7 +85,12 @@
     <string name="type">LAB</string>
     <string name="group">2A</string>
     <string name="room">CSG001</string>
+    <string name="title_activity_menu">MenuActivity</string>
 
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 
 
 </resources>

@@ -15,7 +15,6 @@ import android.view.View.OnClickListener;
 
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -145,17 +144,20 @@ public class LoginActivity extends AppCompatActivity {
 
     private void launchMenuActivity(String id, ArrayList<String> tableEntries){
         sPrefs.edit().putString(getString(R.string.current_user_key), id).apply();
-        Intent intent = new Intent(this, MenuActivity.class);
-        intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+        Intent intent = getMenuActivityIntent();
         String dataKey = getString(R.string.student_timetable_data_key);
         intent.putExtra(dataKey,tableEntries);
         startActivity(intent);
     }
 
-    private void launchMenuActivity(){
+    private Intent getMenuActivityIntent() {
         Intent intent = new Intent(this, MenuActivity.class);
         intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
+        return intent;
+    }
 
+    private void launchMenuActivity(){
+        Intent intent = getMenuActivityIntent();
         startActivity(intent);
     }
 

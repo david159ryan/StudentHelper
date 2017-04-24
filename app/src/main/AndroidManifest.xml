@@ -27,7 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MenuActivity" />
         <activity android:name=".SulisActivity" />
         <activity
             android:name=".PDFReaderActivity"
@@ -35,6 +34,10 @@
             android:label="@string/title_activity_pdfreader"
             android:theme="@style/FullscreenTheme" />
         <activity android:name=".TimetableActivity" />
+        <activity
+            android:name=".MenuActivity"
+            android:label="@string/title_activity_menu"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>

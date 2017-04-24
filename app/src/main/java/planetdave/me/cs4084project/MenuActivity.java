@@ -1,14 +1,15 @@
 package planetdave.me.cs4084project;
 
-
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -16,19 +17,16 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class MenuActivity extends AppCompatActivity implements ListView.OnItemClickListener {
-
-    private SharedPreferences sPrefs;
-    private DatabaseHelper db;
-    private enum MenuItem {
+public class MenuActivity extends AppCompatActivity implements ListView.OnItemClickListener{
+    private enum MenuItems {
         SULIS("Sulis", SulisActivity.class),
-        PDF_READER("PDF Reader", PDFReaderActivity.class),
-        TIMETABLE("Timetable", TimetableActivity.class);
-
+        TIMETABLE("Timetable", TimetableActivity.class),
+        TEMP_MENU("temomenu", MenuActivity.class);
         private String text;
-        private Class activity;
 
-        MenuItem(String text, Class activity){
+
+        private Class activity;
+        MenuItems(String text, Class activity){
             this.text = text;
             this.activity = activity;
         }
@@ -42,11 +40,16 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
         }
     }
 
+    private SharedPreferences sPrefs;
+    private DatabaseHelper db;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         sPrefs = getSharedPreferences(getString(R.string.shared_preferences),
                 MODE_PRIVATE);
@@ -63,7 +66,7 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
 
         menuItemsList = new ArrayList<>();
 
-        for(MenuItem m : MenuItem.values()){
+        for(MenuItems m : MenuItems.values()){
             menuItemsList.add(m.getText());
         }
         //dataStuff();
@@ -90,7 +93,7 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
 
         for(String s : studentData){
             String values[] = s.split(",");
-           // cv.put("id", sPrefs.getString(getString(R.string.current_user_key), ""));
+            // cv.put("id", sPrefs.getString(getString(R.string.current_user_key), ""));
             for(int i = 0; i < titles.length; i++){
                 cv.put(titles[i], values[i]);
             }
@@ -106,9 +109,31 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_activity_options, menu);
+        return true;
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent i = new Intent(this, MenuItem.values()[position].getActivity());
+        Intent i = new Intent(this, MenuItems.values()[position].getActivity());
         startActivity(i);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }
