@@ -2,6 +2,8 @@ package planetdave.me.cs4084project;
 
 import android.support.annotation.NonNull;
 
+import java.sql.Time;
+
 /**
  * Created by David on 24/04/2017.
  */
@@ -45,6 +47,11 @@ public class TimetableEntry {
     @NonNull
     public String getRoom() {
         return room;
+    }
+
+    TimetableEntry(){
+        id = "";
+        duration = 1;
     }
 
     TimetableEntry(@NonNull String id, int startTime, int duration,

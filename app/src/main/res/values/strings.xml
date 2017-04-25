@@ -1,14 +1,15 @@
 <resources>
     <string name="app_name">Student Helper</string>
 
+    <!-- Preferences -->
     <string name="shared_preferences">prefs</string>
     <string name="current_user_key">currentUser</string>
     <string name="no_current_user">NONE</string>
     <string name="first_run">firstrun</string>
     <string name="database_present">databasePresent</string>
+    <string name="users_set_key">usersSet</string>
 
-
-    <string name="database_name">shdb</string>
+    <string name="database_name">shdb.db</string>
 
 
     <!-- Strings related to login -->
@@ -37,7 +38,6 @@
     <!-- Menu values -->
     <string name="menu_header">UL Student Helper</string>
     <string name="menu_logout">Logout</string>
-
 
 
     <!-- Sulis Values -->
@@ -87,10 +87,9 @@
     <string name="room">CSG001</string>
     <string name="title_activity_menu">MenuActivity</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
 
+    <string name="alarm_toast">This is a toast</string>
 
 </resources>

@@ -4,7 +4,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.MenuItem;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
@@ -13,15 +15,20 @@ import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MenuActivity extends AppCompatActivity implements ListView.OnItemClickListener{
     private enum MenuItems {
         SULIS("Sulis", SulisActivity.class),
-        TIMETABLE("Timetable", TimetableActivity.class),
-        TEMP_MENU("temomenu", MenuActivity.class);
+        TIMETABLE("Timetable", TimetableActivity.class);
+
         private String text;
 
 
@@ -43,11 +50,11 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
     private SharedPreferences sPrefs;
     private DatabaseHelper db;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -128,9 +135,13 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            sPrefs.edit().putString(getString(R.string.current_user_key),
+                    getString(R.string.no_current_user)).apply();
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         }
 
         return super.onOptionsItemSelected(item);

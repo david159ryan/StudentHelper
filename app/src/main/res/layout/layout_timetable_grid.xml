@@ -67,30 +67,35 @@
             android:id="@+id/timetable_lv_monday"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
+            android:divider="#00000000"
             android:fillViewport="true" />
 
         <ListView
             android:id="@+id/timetable_lv_tuesday"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
+            android:divider="#00000000"
             android:fillViewport="true" />
 
         <ListView
             android:id="@+id/timetable_lv_wednesday"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
+            android:divider="#00000000"
             android:fillViewport="true" />
 
         <ListView
             android:id="@+id/timetable_lv_thursday"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
+            android:divider="#00000000"
             android:fillViewport="true" />
 
         <ListView
             android:id="@+id/timetable_lv_friday"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
+            android:divider="#00000000"
             android:fillViewport="true" />
     </LinearLayout>
 </LinearLayout>

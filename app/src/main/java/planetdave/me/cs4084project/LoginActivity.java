@@ -58,11 +58,11 @@ public class LoginActivity extends AppCompatActivity {
     private static String noUser;
     private static String firstRun;
     private static String databasePresent;
+    private static String userSetKey;
 
     private static final int ID_MIN_LENGTH = 7;
     private static final int ID_MAX_LENGTH = 8;
 
-    private List<String> timetableData;
     // UI references.
     private TextView mTextInputView;
     private ProgressBar mProgressBar;
@@ -78,12 +78,15 @@ public class LoginActivity extends AppCompatActivity {
         noUser = getString(R.string.no_current_user);
         firstRun = getString(R.string.first_run);
         databasePresent = getString(R.string.database_present);
+        userSetKey = getString(R.string.users_set_key);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         sPrefs = getSharedPreferences(getString(R.string.shared_preferences),
                 MODE_PRIVATE);
 
+        System.out.println("current user: " + sPrefs.getString(userKey, "fail"));
         if(sPrefs.getBoolean(firstRun, true)) {
             initPrefs();
         } else if(!sPrefs.getString(userKey, noUser).equals(noUser)){
@@ -103,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
         sPrefs.edit().putString(userKey, noUser).apply();
         sPrefs.edit().putBoolean(firstRun, false).apply();
         sPrefs.edit().putBoolean(databasePresent, false).apply();
+        //sPrefs.edit().putStringSet()
     }
 
     private InputStatus checkIDStatus(String id) {
@@ -127,7 +131,15 @@ public class LoginActivity extends AppCompatActivity {
         }
         return status;
     }
-
+/*
+    @Override
+    public void onBackPressed() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+    }
+*/
     private void enableProgressBar() {
         mProgressBar.setEnabled(true);
         mProgressBar.setVisibility(View.VISIBLE);
