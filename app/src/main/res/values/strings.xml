@@ -88,8 +88,37 @@
     <string name="title_activity_menu">MenuActivity</string>
 
 
+    <string name="db_table_buildings">buildings</string>
+    <string name="db_table_module_details">module_details</string>
+    <string name="db_table_timetable">timetable</string>
+
+    <!-- building table columns -->
+    <string name="db_buildings_id">_id</string>
+    <string name="db_buildings_name">_name</string>
+
+    <!-- module_details table columns -->
+    <string name="db_module_id">_id</string>
+    <string name="db_module_title">_title</string>
+    <string name="db_module_description">_description</string>
+    <string name="db_module_semester">_semester</string>
+    <string name="db_module_lecturer">_lecturer</string>
+
+    <!-- timetable table columns -->
+    <string name="db_timetable_id">_id</string>
+    <string name="db_timetable_day">_day</string>
+    <string name="db_timetable_start">_start</string>
+    <string name="db_timetable_end">_end</string>
+    <string name="db_timetable_module">_module</string>
+    <string name="db_timetable_type">_type</string>
+    <string name="db_timetable_group">_group</string>
+    <string name="db_timetable_room">_room</string>
+
+
+    <string name="timetable_entry_info_key">ttEntryInfo</string>
+
     <string name="action_settings">Settings</string>
 
     <string name="alarm_toast">This is a toast</string>
+    <string name="title_activity_module_info">ModuleInfoActivity</string>
 
 </resources>

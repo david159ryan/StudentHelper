@@ -49,6 +49,7 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
 
     private SharedPreferences sPrefs;
     private DatabaseHelper db;
+    private PopulateDatabaseTask dbTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +65,8 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
         db = new DatabaseHelper(getApplicationContext());
 
         if(!sPrefs.getBoolean(getString(R.string.database_present), false)){
-            populateDatabase();
+            dbTask = new PopulateDatabaseTask();
+            dbTask.execute();
         }
 
         ArrayList<String> menuItemsList;
@@ -88,7 +90,6 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
         mMenuListView.setOnItemClickListener(this);
     }
 
-    //TODO this may be better handled somewhere else. leaving it here for now
     private void populateDatabase() {
         String dataKey = getString(R.string.student_timetable_data_key);
         SQLiteDatabase database = db.getWritableDatabase();
@@ -147,4 +148,18 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
         return super.onOptionsItemSelected(item);
     }
 
+    private class PopulateDatabaseTask extends AsyncTask<Void, Void, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            populateDatabase();
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            dbTask = null;
+        }
+    }
 }

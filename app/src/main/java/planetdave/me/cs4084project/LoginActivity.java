@@ -89,6 +89,15 @@ public class LoginActivity extends AppCompatActivity {
         System.out.println("current user: " + sPrefs.getString(userKey, "fail"));
         if(sPrefs.getBoolean(firstRun, true)) {
             initPrefs();
+            AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+                @Override
+                protected Boolean doInBackground(Void... params) {
+                    DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+                    db.getReadableDatabase();
+                    return true;
+                }
+            };
+            task.execute();
         } else if(!sPrefs.getString(userKey, noUser).equals(noUser)){
             launchMenuActivity();
             finish();

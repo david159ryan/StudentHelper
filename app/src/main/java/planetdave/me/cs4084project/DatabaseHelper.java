@@ -24,6 +24,10 @@ class DatabaseHelper extends SQLiteAssetHelper {
 
     private Context context;
 
+    public Context getContext() {
+        return context;
+    }
+
     DatabaseHelper(Context context){
         super(context, context.getString(R.string.database_name), null, 1);
         this.context = context;

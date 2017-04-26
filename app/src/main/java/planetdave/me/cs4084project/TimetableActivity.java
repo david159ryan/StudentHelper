@@ -1,36 +1,24 @@
 package planetdave.me.cs4084project;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.HorizontalScrollView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class TimetableActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
@@ -40,8 +28,6 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
     private DatabaseHelper db;
     private int currentColour = 0;
     private Map<String, Integer> colours;
-
-    private List<TimetableEntry> entries[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +41,7 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
                 MODE_PRIVATE);
         db = new DatabaseHelper(getApplicationContext());
 
-        entries = getTimetableEntries();
+        List<TimetableEntry>[] entries = getTimetableEntries();
 
         ListView dayLists[] = new ListView[5];
         for(int i = 0; i < dayLists.length; i++){
@@ -80,10 +66,6 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
     private List<TimetableEntry>[] getTimetableEntries() {
         String currentUserKey = getString(R.string.current_user_key);
         String id = sPrefs.getString(currentUserKey, "");
-
-
-        //System.out.println("SELECT * FROM timetable WHERE _id = '"+id+"' " +
-          //      "ORDER BY _start ASC");
 
         ArrayList<TimetableEntry>[] entries = new ArrayList[NUM_DAYS];
         for(int i = 0 ; i < NUM_DAYS; i ++){
@@ -112,7 +94,7 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
                     startTime++;
                 }
                 entries[day].add(new TimetableEntry(
-                        id, start, duration, module, type, group, room
+                        id, day, start, duration, module, type, group, room
                 ));
                 startTime += duration;
                 System.out.println();
@@ -126,21 +108,19 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        String text = ((TextView)view.findViewById(R.id.tt_entry_module)).getText().toString();
-        Cursor c = db.getReadableDatabase().rawQuery(
-                "SELECT _lecturer FROM module_details " +
-                        "WHERE _id = '" + text + "';",
-                null
-        );
-        while(c.moveToNext()){
-            System.out.println(c.getString(c.getPosition()));
-        }
+
+        TimetableEntry t = (TimetableEntry)parent.getItemAtPosition(position);
+
+        Intent intent = new Intent(this, TimetableEntryInfoActivity.class);
+        Bundle b = new Bundle();
+        b.putParcelable(getString(R.string.timetable_entry_info_key), t);
+        intent.putExtras(b);
+        startActivity(intent);
     }
 
     private class DayListAdapter extends ArrayAdapter<TimetableEntry>{
 
         private Context context;
-        private int nextItemY = 0;
 
         DayListAdapter(@NonNull Context context, @NonNull List<TimetableEntry> objects) {
             super(context, R.layout.layout_timetable_entry, R.id.menu_selection, objects);
@@ -160,6 +140,7 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
         }
 
         //TODO create a class for a timetable entry and get this thing to use it properly
+        @NonNull
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             EntryHolder holder;
@@ -190,15 +171,14 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
             if(item.getId().equals("")){
                 row.setVisibility(View.GONE);
             }else{
+                item.setColour(getModuleColour(item.getModule()));
                 holder.module.setText(item.getModule());
                 holder.type.setText(item.getType());
                 holder.group.setText(item.getGroup());
                 holder.room.setText(item.getRoom());
 
-                //row.setY((item.getStartTime() - 9) * minHeight - nextItemY);
-                //nextItemY += minHeight * duration;
                 GradientDrawable shape = (GradientDrawable)row.getBackground();
-                shape.setColor(getModuleColour(item.getModule()));
+                shape.setColor(item.getColour());
                 row.setBackground(shape);
             }
 
@@ -206,13 +186,10 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
             return row;
         }
 
-
-
         private int getMinHeight() {
             int frameHeight = (int)getResources().getDimension(R.dimen.tt_frame_height);
-            int containerHeight = findViewById(R.id.tt_scroll_view).getHeight();
-            int height = (containerHeight - frameHeight)/9;
-            return height;
+            double containerHeight = findViewById(R.id.tt_scroll_view).getHeight();
+            return (int)Math.ceil((containerHeight - frameHeight)/9);
         }
 
     }
