@@ -2,8 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/te_info_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     android:orientation="vertical"
     tools:context="planetdave.me.cs4084project.TimetableEntryInfoActivity">
 
@@ -21,7 +23,8 @@
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
             android:text="Monday"
-            android:textAlignment="textStart" />
+            android:textAlignment="textStart"
+            android:textColor="@android:color/background_light" />
 
         <TextView
             android:id="@+id/te_textview_time"
@@ -32,7 +35,8 @@
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
             android:text="09:00"
-            android:textAlignment="textStart" />
+            android:textAlignment="textStart"
+            android:textColor="@android:color/background_light" />
     </LinearLayout>
 
     <LinearLayout
@@ -49,7 +53,8 @@
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
             android:text="CS4084"
-            android:textAlignment="textStart" />
+            android:textAlignment="textStart"
+            android:textColor="@android:color/background_light" />
 
         <Button
             android:id="@+id/te_button_details"
@@ -57,7 +62,9 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="20dp"
             android:layout_weight="2"
-            android:text="Details" />
+            android:background="@color/colorPrimary"
+            android:text="@string/te_info_button_details_label"
+            android:textColor="@android:color/background_light" />
     </LinearLayout>
 
     <TextView
@@ -68,7 +75,8 @@
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:text="Mobile Applications Development"
-        android:textAlignment="textStart" />
+        android:textAlignment="textStart"
+        android:textColor="@android:color/background_light" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -84,7 +92,8 @@
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
             android:text="LAB"
-            android:textAlignment="textStart" />
+            android:textAlignment="textStart"
+            android:textColor="@android:color/background_light" />
 
         <TextView
             android:id="@+id/te_textview_group"
@@ -95,7 +104,8 @@
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
             android:text="2A"
-            android:textAlignment="textStart" />
+            android:textAlignment="textStart"
+            android:textColor="@android:color/background_light" />
     </LinearLayout>
 
     <LinearLayout
@@ -111,7 +121,8 @@
             android:paddingBottom="10dp"
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
-            android:text="Building:" />
+            android:text="@string/te_info_textview_building_label"
+            android:textColor="@android:color/background_light" />
 
         <TextView
             android:id="@+id/te_textview_building"
@@ -121,7 +132,8 @@
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
             android:text="Kemmy Business School"
-            android:textAlignment="textStart" />
+            android:textAlignment="textStart"
+            android:textColor="@android:color/background_light" />
 
         <TextView
             android:id="@+id/te_textview_building_code"
@@ -130,7 +142,8 @@
             android:layout_weight="3"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
-            android:text="(KBS)" />
+            android:text="(KBS)"
+            android:textColor="@android:color/background_light" />
     </LinearLayout>
 
     <LinearLayout
@@ -146,8 +159,9 @@
             android:paddingBottom="10dp"
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
-            android:text="Floor:"
-            android:textAlignment="textStart" />
+            android:text="@string/te_info_textview_floor_label"
+            android:textAlignment="textStart"
+            android:textColor="@android:color/background_light" />
 
         <TextView
             android:id="@+id/te_textview_floor_num"
@@ -156,7 +170,8 @@
             android:layout_weight="1"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
-            android:text="2" />
+            android:text="2"
+            android:textColor="@android:color/background_light" />
     </LinearLayout>
 
     <LinearLayout
@@ -172,8 +187,9 @@
             android:paddingBottom="10dp"
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
-            android:text="Room:"
-            android:textAlignment="textStart" />
+            android:text="@string/te_info_textview_room_label"
+            android:textAlignment="textStart"
+            android:textColor="@android:color/background_light" />
 
         <TextView
             android:id="@+id/te_textview_room_num"
@@ -182,7 +198,8 @@
             android:layout_weight="1"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
-            android:text="010" />
+            android:text="010"
+            android:textColor="@android:color/background_light" />
     </LinearLayout>
 
 </LinearLayout>

@@ -28,7 +28,7 @@ public class TimetableEntry implements Parcelable{
 
     TimetableEntry(@NonNull String id, int day, int startTime, int duration,
                    @NonNull String module, @NonNull  String type, @NonNull String group,
-                   @NonNull String room) {
+                   @NonNull String room, int color) {
         this.id = id;
         this.day = day;
         this.startTime = startTime;
@@ -37,6 +37,7 @@ public class TimetableEntry implements Parcelable{
         this.type = type;
         this.group = group;
         this.room = room;
+        this.colour = color;
     }
 
     protected TimetableEntry(Parcel in) {

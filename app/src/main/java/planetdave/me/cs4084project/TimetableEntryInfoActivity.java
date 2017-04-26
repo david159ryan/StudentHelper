@@ -6,15 +6,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.util.Arrays;
 
 public class TimetableEntryInfoActivity extends AppCompatActivity {
 
     DatabaseHelper db;
+
+    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,7 +22,7 @@ public class TimetableEntryInfoActivity extends AppCompatActivity {
 
         db = new DatabaseHelper(getApplicationContext());
         Bundle b = this.getIntent().getExtras();
-        TimetableEntry t = b.getParcelable(getString(R.string.timetable_entry_info_key));
+        final TimetableEntry t = b.getParcelable(getString(R.string.timetable_entry_info_key));
 
 
         Cursor mCursor = db.getReadableDatabase().rawQuery("SELECT * FROM " +
@@ -39,6 +39,12 @@ public class TimetableEntryInfoActivity extends AppCompatActivity {
         );
         Room r = new Room(t.getRoom(), db);
 
+        LinearLayout layout = (LinearLayout)getWindow().getDecorView()
+                .findViewById(R.id.te_info_layout);
+        layout.setBackgroundColor(getResources().getColor(t.getColour()));
+        //shape.setColor(t.getColour());
+        //getWindow().getDecorView().setBackground(shape);
+
         TextView day = (TextView)findViewById(R.id.te_textview_day);
         TextView code = (TextView)findViewById(R.id.te_textview_code);
         TextView title = (TextView)findViewById(R.id.te_textview_title);
@@ -50,11 +56,19 @@ public class TimetableEntryInfoActivity extends AppCompatActivity {
         TextView room = (TextView)findViewById(R.id.te_textview_room_num);
 
         Button details = (Button)findViewById(R.id.te_button_details);
+        String colorName = getResources().getResourceName(t.getColour());
+        int buttonColor = getResources().getIdentifier(colorName + "_light", "color",
+                getPackageName());
+        details.setBackgroundColor(buttonColor);
 
         details.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              //  Intent intent = new Intent(this, null);
+                Intent intent = new Intent(TimetableEntryInfoActivity.this,
+                        ModuleInfoActivity.class);
+                intent.putExtra(getString(R.string.module_info_code_key), t.getModule());
+                intent.putExtra(getString(R.string.module_info_colour_key), t.getColour());
+                startActivity(intent);
             }
         });
 

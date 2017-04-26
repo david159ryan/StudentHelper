@@ -88,13 +88,13 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
                 String type = c.getString(c.getColumnIndex("_type"));
                 String group = c.getString(c.getColumnIndex("_group"));
                 String room = c.getString(c.getColumnIndex("_room"));
-
+                int color = getModuleColour(module);
                 while(startTime < start){
                     entries[day].add(new TimetableEntry());
                     startTime++;
                 }
                 entries[day].add(new TimetableEntry(
-                        id, day, start, duration, module, type, group, room
+                        id, day, start, duration, module, type, group, room, color
                 ));
                 startTime += duration;
                 System.out.println();
@@ -118,6 +118,18 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
         startActivity(intent);
     }
 
+    public int getModuleColour(String module){
+        if(!colours.containsKey(module)){
+            colours.put(module, getResources().getIdentifier(
+                    ("tt_background_colour_" + currentColour),
+                    "color",
+                    getPackageName()
+            ));
+            currentColour++;
+        }
+        return colours.get(module);
+    }
+
     private class DayListAdapter extends ArrayAdapter<TimetableEntry>{
 
         private Context context;
@@ -127,17 +139,7 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
             this.context = context;
         }
 
-        public int getModuleColour(String module){
-            if(!colours.containsKey(module)){
-                colours.put(module, getColor(getResources().getIdentifier(
-                        ("tt_background_colour_" + currentColour),
-                        "color",
-                        getPackageName())
-                ));
-                currentColour++;
-            }
-            return colours.get(module);
-        }
+
 
         //TODO create a class for a timetable entry and get this thing to use it properly
         @NonNull
@@ -171,14 +173,13 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
             if(item.getId().equals("")){
                 row.setVisibility(View.GONE);
             }else{
-                item.setColour(getModuleColour(item.getModule()));
                 holder.module.setText(item.getModule());
                 holder.type.setText(item.getType());
                 holder.group.setText(item.getGroup());
                 holder.room.setText(item.getRoom());
 
                 GradientDrawable shape = (GradientDrawable)row.getBackground();
-                shape.setColor(item.getColour());
+                shape.setColor(getResources().getColor(item.getColour()));
                 row.setBackground(shape);
             }
 

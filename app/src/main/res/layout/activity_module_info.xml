@@ -4,7 +4,93 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/background_light"
     android:orientation="vertical"
     tools:context="planetdave.me.cs4084project.ModuleInfoActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/mi_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:title="@string/module_info_toolbar_title"
+        app:titleTextColor="@android:color/background_light" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/mi_textview_title_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/text_view_bottom_padding"
+                android:paddingLeft="@dimen/text_view_left_padding"
+                android:paddingTop="@dimen/text_view_top_padding"
+                android:text="@string/module_info_textview_course_title"
+                android:textColor="@android:color/background_dark"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/mi_textview_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/text_view_bottom_padding"
+                android:paddingLeft="@dimen/text_view_left_indent"
+                android:paddingTop="@dimen/text_view_top_padding"
+                android:text="Mobile Application Development"
+                android:textColor="@android:color/background_dark" />
+
+            <TextView
+                android:id="@+id/mi_textview_description_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/text_view_bottom_padding"
+                android:paddingLeft="@dimen/text_view_left_padding"
+                android:paddingTop="@dimen/text_view_top_padding"
+                android:text="@string/module_info_textview_description"
+                android:textColor="@android:color/background_dark"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/mi_textview_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/text_view_bottom_padding"
+                android:paddingLeft="@dimen/text_view_left_padding"
+                android:paddingTop="@dimen/text_view_top_padding"
+                android:text="Description"
+                android:textColor="@android:color/background_dark" />
+
+            <TextView
+                android:id="@+id/mi_textview_lecturer_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/text_view_bottom_padding"
+                android:paddingLeft="@dimen/text_view_left_padding"
+                android:paddingTop="@dimen/text_view_top_padding"
+                android:text="@string/module_info_textview_lecturer"
+                android:textColor="@android:color/background_dark"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/mi_textview_lecturer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/text_view_bottom_padding"
+                android:paddingLeft="@dimen/text_view_left_indent"
+                android:paddingTop="@dimen/text_view_top_padding"
+                android:text="David.Ryan@ul.ie"
+                android:textColor="@android:color/background_dark" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

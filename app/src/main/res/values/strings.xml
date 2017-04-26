@@ -113,10 +113,26 @@
     <string name="db_timetable_group">_group</string>
     <string name="db_timetable_room">_room</string>
 
-
+    <!-- TimetableEntryInfoActivity values -->
     <string name="timetable_entry_info_key">ttEntryInfo</string>
+    <string name="te_info_textview_building_label">Building:</string>
+    <string name="te_info_textview_floor_label">Floor:</string>
+    <string name="te_info_textview_room_label">Room:</string>
+    <string name="te_info_button_details_label">Details</string>
 
-    <string name="action_settings">Settings</string>
+    <!-- ModuleInfoActivity -->
+    <string name="module_info_toolbar_title">CS4084 (placeholder):</string>
+    <string name="module_info_textview_course_title">Course Title:</string>
+    <string name="module_info_textview_description">Description:</string>
+    <string name="module_info_textview_semester">Course Title:</string>
+    <string name="module_info_textview_lecturer">Lecturer:</string>
+    <string name="module_info_code_key">moduleInfoCodeKey</string>
+    <string name="module_info_colour_key">moduleInfoColourKey</string>
+
+
+
+
+
 
     <string name="alarm_toast">This is a toast</string>
     <string name="title_activity_module_info">ModuleInfoActivity</string>
