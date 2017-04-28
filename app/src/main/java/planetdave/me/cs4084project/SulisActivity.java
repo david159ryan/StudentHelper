@@ -50,6 +50,7 @@ public class SulisActivity extends AppCompatActivity {
     private boolean bSulisDirectoryExists;
     private WebView webview;
 
+
     //// TODO: 16/04/2017 handle more than just PDFs
 
     @SuppressLint("SetJavascriptEnabled")
@@ -181,15 +182,10 @@ class SulisWebViewClient extends WebViewClient {
                     System.out.println("file exists");
                     parent.launchPdfActivity(fileCheck.getAbsolutePath());
                     shouldOverride = true;
-                }else{
-                    System.out.println("file doesn't exists");
                 }
             }
         }
         System.out.println("should override? " + shouldOverride);
         return shouldOverride;
     }
-
-
-
 }

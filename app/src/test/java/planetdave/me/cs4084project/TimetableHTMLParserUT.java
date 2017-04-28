@@ -127,6 +127,6 @@ public class TimetableHTMLParserUT {
     public void testParseTimeTableEntry(){
         String result = TimetableHTMLParser.parseTimetableEntry(testHTML);
         System.out.println(result);
-        assertTrue(result.equals("09:00,10:00,CS4416,LAB,2A,CS2044"));
+        assertTrue(result.equals("09,10,CS4416,LAB,2A,CS2044"));
     }
 }
