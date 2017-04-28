@@ -9,40 +9,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
-import android.webkit.HttpAuthHandler;
 import android.webkit.URLUtil;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
-
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.CookieStore;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+
 
 public class SulisActivity extends AppCompatActivity {
     private long mDownloadedFileID;
@@ -58,6 +43,13 @@ public class SulisActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sulis);
+
+        Toolbar tBar = (Toolbar)findViewById(R.id.sulis_activity_toolbar);
+        setSupportActionBar(tBar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         /* check if we have write permission and if sulis directory exists .
          * Sulis directory should be /Documents/StudentHelper/Sulis
@@ -148,11 +140,19 @@ public class SulisActivity extends AppCompatActivity {
         return permissionCheck == PermissionChecker.PERMISSION_GRANTED;
     }
 
+    @Override
+    public void onBackPressed() {
+        if(webview.canGoBack()){
+            webview.goBack();
+        }else{
+            super.onBackPressed();
+        }
+    }
 }
 class SulisWebViewClient extends WebViewClient {
 
     private SulisActivity parent;
-    public SulisWebViewClient(SulisActivity parent) {
+    SulisWebViewClient(SulisActivity parent) {
         this.parent = parent;
     }
 

@@ -13,4 +13,5 @@
     <dimen name="text_view_bottom_padding">10dp</dimen>
     <dimen name="text_view_left_padding">10dp</dimen>
     <dimen name="text_view_left_indent">40dp</dimen>
+    <dimen name="sulis_toolbar_height">50dp</dimen>
 </resources>

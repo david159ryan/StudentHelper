@@ -28,17 +28,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SulisActivity" />
+        <activity
+            android:name=".MenuActivity"
+            android:label="@string/title_activity_menu"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".SulisActivity"
+            android:parentActivityName=".MenuActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MenuActivity"/>
+        </activity>
         <activity
             android:name=".PDFReaderActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_pdfreader"
             android:theme="@style/FullscreenTheme" />
         <activity android:name=".TimetableActivity" />
-        <activity
-            android:name=".MenuActivity"
-            android:label="@string/title_activity_menu"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
         <receiver
             android:name=".OnBootReceiver"

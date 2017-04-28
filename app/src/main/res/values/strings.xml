@@ -42,8 +42,9 @@
 
     <!-- Sulis Values -->
     <string name="sulis_url">https://sulis.ul.ie/portal/pda/?force.login=yes</string>
+    <string name="sulis_google_docs">http://docs.google.com/gview?embedded=true&amp;url=</string>
+    <string name="sulis_google_domain">docs.google.com</string>
     <string name="sulis_domain">sulis.ul.ie</string>
-    <string name="sulis_cookie_name">SAKAIID</string>
     <string name="sulis_directory">/StudentHelper/Sulis/</string>
 
     <!-- PDF Reader values -->
