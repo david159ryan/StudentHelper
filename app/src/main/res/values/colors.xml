@@ -8,14 +8,18 @@
 
     <color name="tt_background_colour_0">#A0344E</color>
     <color name="tt_background_colour_1">#b06e40</color>
-    <color name="tt_background_colour_2">#416C85</color>
+    <color name="tt_background_colour_2">#643D6E</color>
     <color name="tt_background_colour_3">#27233E</color>
     <color name="tt_background_colour_4">#3A5336</color>
 
     <color name="tt_background_colour_0_light">#B1455f</color>
     <color name="tt_background_colour_1_light">#C17F51</color>
-    <color name="tt_background_colour_2_light">#527D96</color>
+    <color name="tt_background_colour_2_light">#754E7F</color>
     <color name="tt_background_colour_3_light">#38344F</color>
     <color name="tt_background_colour_4_light">#4B6447</color>
+
+    <color name="tt_background_colour_5">#416c85</color>
+    <color name="tt_background_colour_5_light">#527d96</color>
+
 
 </resources>

@@ -1,8 +1,16 @@
 package planetdave.me.cs4084project;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+
+import java.util.Calendar;
 
 /**
  * Created by David on 24/04/2017.
@@ -10,6 +18,10 @@ import android.support.annotation.NonNull;
  */
 
 public class TimetableEntry implements Parcelable{
+
+    private AlarmManager alarmManager = null;
+    private PendingIntent pIntent = null;
+    private boolean shouldActivateAlarm = true;
 
     private String id;
     private int startTime;
@@ -41,15 +53,15 @@ public class TimetableEntry implements Parcelable{
     }
 
     protected TimetableEntry(Parcel in) {
-        id = in.readString();
-        startTime = in.readInt();
-        day = in.readInt();
-        duration = in.readInt();
-        module =in.readString();
-        type = in.readString();
-        group = in.readString();
-        room = in.readString();
-        colour = in.readInt();
+        id          = in.readString();
+        startTime   = in.readInt();
+        day         = in.readInt();
+        duration    = in.readInt();
+        module      = in.readString();
+        type        = in.readString();
+        group       = in.readString();
+        room        = in.readString();
+        colour      = in.readInt();
     }
 
     public static final Creator<TimetableEntry> CREATOR = new Creator<TimetableEntry>() {
@@ -66,10 +78,6 @@ public class TimetableEntry implements Parcelable{
 
     public int getDay() {
         return day;
-    }
-
-    public void setDay(int day) {
-        this.day = day;
     }
 
     @NonNull
@@ -108,8 +116,13 @@ public class TimetableEntry implements Parcelable{
         return colour;
     }
 
-    public void setColour(int colour) {
-        this.colour = colour;
+
+    public boolean shouldActivateAlarm(){
+        return shouldActivateAlarm;
+    }
+
+    public void setAlarmEnabled(boolean enabled){
+        shouldActivateAlarm = enabled;
     }
 
     @Override
@@ -128,5 +141,42 @@ public class TimetableEntry implements Parcelable{
         dest.writeString(group);
         dest.writeString(room);
         dest.writeInt(colour);
+    }
+
+    public void setAlarm(Context context) {
+        if(alarmManager == null){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY + day);
+            calendar.set(Calendar.HOUR_OF_DAY, startTime - 1);
+            calendar.set(Calendar.MINUTE, 45);
+
+            if(calendar.getTimeInMillis() < System.currentTimeMillis() - AlarmManager.INTERVAL_HOUR){
+                calendar.add(Calendar.WEEK_OF_YEAR, 1);
+            }
+
+            alarmManager = (AlarmManager)context.getApplicationContext().getSystemService(
+                    Context.ALARM_SERVICE
+            );
+
+            System.out.println(calendar.getTime().toString());
+
+            Intent intent = new Intent(context, AlarmReceiver.class);
+            intent.putExtra(context.getString(R.string.timetable_entry_info_key), this);
+            intent.setAction(context.getString(R.string.timetable_alarm_set_action));
+            intent.addCategory(context.getString(R.string.alarm_category));
+            pIntent = PendingIntent.getBroadcast(
+                    context, 0, intent, 0
+            );
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                    AlarmManager.INTERVAL_DAY * 7, pIntent);
+
+        }
+    }
+
+    public void cancelAlarm(){
+        if(alarmManager != null){
+            alarmManager.cancel(pIntent);
+        }
     }
 }

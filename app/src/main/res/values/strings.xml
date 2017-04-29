@@ -8,6 +8,7 @@
     <string name="first_run">firstrun</string>
     <string name="database_present">databasePresent</string>
     <string name="users_set_key">usersSet</string>
+    <string name="alarms_set_key">alarmsSetKey</string>
 
     <string name="database_name">shdb.db</string>
 
@@ -130,10 +131,19 @@
     <string name="module_info_code_key">moduleInfoCodeKey</string>
     <string name="module_info_colour_key">moduleInfoColourKey</string>
 
+    <!-- Alarm Values -->
+    <string name="alarm_intent_key">alarmIntentKey</string>
+    <string name="ringer_value_intent_key">ringerValueIntentKey</string>
+    <string name="timetable_alarm_set_action">setAlarmAction</string>
+    <string name="timetable_silence_action">silenceAction</string>
+    <string name="timetable_un_silence_action">unSilenceAction</string>
+    <string name="alarm_category">alarm</string>
 
-
-
-
+    <string name="alert_dialog_title_key">alertDialogTitleKey</string>
+    <string name="alert_dialog_message_key">alertDialogMessageKey</string>
+    <string name="alert_dialog_title">UL Student Helper</string>
+    <string name="alert_dialog_silence">Your phone has been silenced</string>
+    <string name="alert_dialog_un_silence">Your phone has been un-silenced</string>
 
     <string name="alarm_toast">This is a toast</string>
     <string name="title_activity_module_info">ModuleInfoActivity</string>

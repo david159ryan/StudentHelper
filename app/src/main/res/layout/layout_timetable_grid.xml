@@ -2,12 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <LinearLayout
 
         android:layout_width="match_parent"
         android:layout_height="@dimen/tt_frame_height"
+        android:background="@android:color/darker_gray"
         android:orientation="horizontal">
 
         <TextView
@@ -15,45 +17,55 @@
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
             android:background="@drawable/tt_border"
+            app:backgroundTint="@color/tt_background_colour_5_light"
             android:gravity="center_vertical"
             android:text="@string/tt_mon_long"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="@android:color/background_light" />
 
         <TextView
             android:id="@+id/textView14"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
             android:background="@drawable/tt_border"
+            app:backgroundTint="@color/tt_background_colour_5_light"
             android:gravity="center_vertical"
             android:text="@string/tt_tue_long"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="@android:color/background_light" />
 
         <TextView
             android:id="@+id/textView18"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
             android:background="@drawable/tt_border"
+            app:backgroundTint="@color/tt_background_colour_5_light"
             android:gravity="center_vertical"
             android:text="@string/tt_wed_long"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="@android:color/background_light" />
 
         <TextView
             android:id="@+id/textView17"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
             android:background="@drawable/tt_border"
+            app:backgroundTint="@color/tt_background_colour_5_light"
             android:gravity="center_vertical"
             android:text="@string/tt_thu_long"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="@android:color/background_light" />
 
         <TextView
             android:id="@+id/textView16"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
             android:background="@drawable/tt_border"
+            app:backgroundTint="@color/tt_background_colour_5_light"
             android:gravity="center_vertical"
             android:text="@string/tt_fri_long"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="@android:color/background_light" />
     </LinearLayout>
 
     <LinearLayout
@@ -67,6 +79,7 @@
             android:id="@+id/timetable_lv_monday"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
+            android:background="@android:color/darker_gray"
             android:divider="#00000000"
             android:fillViewport="true" />
 
@@ -74,6 +87,7 @@
             android:id="@+id/timetable_lv_tuesday"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
+            android:background="@android:color/darker_gray"
             android:divider="#00000000"
             android:fillViewport="true" />
 
@@ -81,6 +95,7 @@
             android:id="@+id/timetable_lv_wednesday"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
+            android:background="@android:color/darker_gray"
             android:divider="#00000000"
             android:fillViewport="true" />
 
@@ -88,6 +103,7 @@
             android:id="@+id/timetable_lv_thursday"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
+            android:background="@android:color/darker_gray"
             android:divider="#00000000"
             android:fillViewport="true" />
 
@@ -95,6 +111,7 @@
             android:id="@+id/timetable_lv_friday"
             android:layout_width="@dimen/tt_day_width"
             android:layout_height="match_parent"
+            android:background="@android:color/darker_gray"
             android:divider="#00000000"
             android:fillViewport="true" />
     </LinearLayout>

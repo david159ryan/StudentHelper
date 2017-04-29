@@ -3,14 +3,15 @@
     package="planetdave.me.cs4084project">
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.REAL_GET_TASKS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <application
         android:allowBackup="true"
@@ -37,7 +38,7 @@
             android:parentActivityName=".MenuActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MenuActivity"/>
+                android:value=".MenuActivity" />
         </activity>
         <activity
             android:name=".PDFReaderActivity"
@@ -56,6 +57,20 @@
 
         <activity android:name=".TimetableEntryInfoActivity" />
         <activity android:name=".ModuleInfoActivity" />
+
+        <receiver
+            android:name=".AlarmReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="">
+            <intent-filter>
+                <action android:name="@string/timetable_alarm_set_action" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".AlertDialogActivity"
+            android:theme="@android:style/Theme.Dialog"
+            android:label="@string/alert_dialog_title"/>
     </application>
 
 </manifest>

@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
     private static String firstRun;
     private static String databasePresent;
     private static String userSetKey;
+    private static String alarmsSet;
 
     private static final int ID_MIN_LENGTH = 7;
     private static final int ID_MAX_LENGTH = 8;
@@ -79,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
         firstRun = getString(R.string.first_run);
         databasePresent = getString(R.string.database_present);
         userSetKey = getString(R.string.users_set_key);
+        alarmsSet = getString(R.string.alarms_set_key);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -115,6 +117,7 @@ public class LoginActivity extends AppCompatActivity {
         sPrefs.edit().putString(userKey, noUser).apply();
         sPrefs.edit().putBoolean(firstRun, false).apply();
         sPrefs.edit().putBoolean(databasePresent, false).apply();
+        sPrefs.edit().putBoolean(alarmsSet, false).apply();
         //sPrefs.edit().putStringSet()
     }
 

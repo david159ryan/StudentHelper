@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     tools:context="planetdave.me.cs4084project.TimetableActivity">
 
@@ -13,11 +14,13 @@
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="8dp">
 
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/tt_tv_space"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/tt_frame_height"
-                android:background="@drawable/tt_border" />
+                android:background="@drawable/tt_border"
+                app:backgroundTint="@color/tt_background_colour_5"
+                android:textColor="@android:color/background_light" />
 
             <TextView
                 android:id="@+id/timetable_tv_09"
@@ -25,9 +28,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/tt_border"
+                app:backgroundTint="@color/tt_background_colour_5"
                 android:gravity="center_vertical"
                 android:text="@string/tt_09_text"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light" />
 
             <TextView
                 android:id="@+id/timetable_tv_10"
@@ -35,9 +40,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/tt_border"
+                app:backgroundTint="@color/tt_background_colour_5"
                 android:gravity="center_vertical"
                 android:text="@string/tt_10_text"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light" />
 
             <TextView
                 android:id="@+id/timetable_tv_11"
@@ -45,9 +52,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/tt_border"
+                app:backgroundTint="@color/tt_background_colour_5"
                 android:gravity="center_vertical"
                 android:text="@string/tt_11_text"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light" />
 
             <TextView
                 android:id="@+id/timetable_tv_12"
@@ -55,9 +64,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/tt_border"
+                app:backgroundTint="@color/tt_background_colour_5"
                 android:gravity="center_vertical"
                 android:text="@string/tt_12_text"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light" />
 
             <TextView
                 android:id="@+id/timetable_tv_13"
@@ -65,9 +76,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/tt_border"
+                app:backgroundTint="@color/tt_background_colour_5"
                 android:gravity="center_vertical"
                 android:text="@string/tt_13_text"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light" />
 
             <TextView
                 android:id="@+id/timetable_tv_14"
@@ -75,9 +88,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/tt_border"
+                app:backgroundTint="@color/tt_background_colour_5"
                 android:gravity="center_vertical"
                 android:text="@string/tt_14_text"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light" />
 
             <TextView
                 android:id="@+id/timetable_tv_15"
@@ -85,9 +100,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/tt_border"
+                app:backgroundTint="@color/tt_background_colour_5"
                 android:gravity="center_vertical"
                 android:text="@string/tt_15_text"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light" />
 
             <TextView
                 android:id="@+id/timetable_tv_16"
@@ -95,9 +112,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/tt_border"
+                app:backgroundTint="@color/tt_background_colour_5"
                 android:gravity="center_vertical"
                 android:text="@string/tt_16_text"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light" />
 
             <TextView
                 android:id="@+id/timetable_tv_17"
@@ -105,9 +124,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/tt_border"
+                app:backgroundTint="@color/tt_background_colour_5"
                 android:gravity="center_vertical"
                 android:text="@string/tt_17_text"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light" />
         </LinearLayout>
 
         <HorizontalScrollView

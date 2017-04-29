@@ -1,12 +1,14 @@
 package planetdave.me.cs4084project;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Vibrator;
 import android.view.MenuItem;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
@@ -113,7 +115,7 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
 
     @Override
     public void onBackPressed() {
-
+        super.onBackPressed();
     }
 
     @Override
@@ -125,6 +127,8 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Vibrator vb = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+        vb.vibrate(100);
         Intent i = new Intent(this, MenuItems.values()[position].getActivity());
         startActivity(i);
     }

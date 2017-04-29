@@ -1,11 +1,16 @@
 package planetdave.me.cs4084project;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,7 +20,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,25 +30,25 @@ import java.util.Map;
 public class TimetableActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
 
+    //TODO remove this
+    TimetableEntry tEntry;
+
+    public static int currentColour = 0;
     private static final int NUM_DAYS = 5;
-    private SharedPreferences sPrefs;
-    private DatabaseHelper db;
-    private int currentColour = 0;
-    private Map<String, Integer> colours;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timetable);
 
-        colours = new HashMap<>();
+
 
         //getScreenDimensions();
-        sPrefs = getSharedPreferences(getString(R.string.shared_preferences),
+        SharedPreferences sPrefs = getSharedPreferences(getString(R.string.shared_preferences),
                 MODE_PRIVATE);
-        db = new DatabaseHelper(getApplicationContext());
 
-        List<TimetableEntry>[] entries = getTimetableEntries();
+        List<TimetableEntry>[] entries = TimetableEntryRetriver.getTimetableEntries(this);
 
         ListView dayLists[] = new ListView[5];
         for(int i = 0; i < dayLists.length; i++){
@@ -52,63 +59,17 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
             ));
             dayLists[i].setOnItemClickListener(this);
         }
-
-    }
-/*
-    private void getScreenDimensions() {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        SCREEN_HEIGHT = displayMetrics.heightPixels;
-        SCREEN_WIDTH = displayMetrics.widthPixels;
-    }
-*/
-    @SuppressWarnings("unchecked")
-    private List<TimetableEntry>[] getTimetableEntries() {
-        String currentUserKey = getString(R.string.current_user_key);
-        String id = sPrefs.getString(currentUserKey, "");
-
-        ArrayList<TimetableEntry>[] entries = new ArrayList[NUM_DAYS];
-        for(int i = 0 ; i < NUM_DAYS; i ++){
-            entries[i] = new ArrayList<>();
+        if(!sPrefs.getBoolean(getString(R.string.alarms_set_key), false)){
+            setAlarms(entries);
+            sPrefs.edit().putBoolean(getString(R.string.alarms_set_key), true).apply();
         }
-
-        for(int i = 0; i < NUM_DAYS; i ++){
-            Cursor c = db.getReadableDatabase().rawQuery("SELECT * FROM timetable " +
-                            "WHERE _id = '"+id+"' AND _day = "+ i +" " +
-                            "ORDER BY _day, _start ASC", null);
-            int startTime = 9;
-
-            while(c.moveToNext()){
-
-                int day = Integer.parseInt(c.getString(c.getColumnIndex("_day")));
-                int start = Integer.parseInt(c.getString(c.getColumnIndex("_start")));
-                int end = Integer.parseInt(c.getString(c.getColumnIndex("_end")));
-                int duration = end - start;
-                String module = c.getString(c.getColumnIndex("_module"));
-                String type = c.getString(c.getColumnIndex("_type"));
-                String group = c.getString(c.getColumnIndex("_group"));
-                String room = c.getString(c.getColumnIndex("_room"));
-                int color = getModuleColour(module);
-                while(startTime < start){
-                    entries[day].add(new TimetableEntry());
-                    startTime++;
-                }
-                entries[day].add(new TimetableEntry(
-                        id, day, start, duration, module, type, group, room, color
-                ));
-                startTime += duration;
-                System.out.println();
-            }
-            c.close();
-        }
-
-
-        return entries;
     }
+
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        Vibrator vb = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+        vb.vibrate(100);
         TimetableEntry t = (TimetableEntry)parent.getItemAtPosition(position);
 
         Intent intent = new Intent(this, TimetableEntryInfoActivity.class);
@@ -118,16 +79,48 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
         startActivity(intent);
     }
 
-    public int getModuleColour(String module){
-        if(!colours.containsKey(module)){
-            colours.put(module, getResources().getIdentifier(
-                    ("tt_background_colour_" + currentColour),
-                    "color",
-                    getPackageName()
-            ));
-            currentColour++;
+    private void setAlarms(List<TimetableEntry>[] entries) {
+        Context context = TimetableActivity.this;
+
+
+        for (List<TimetableEntry> entry : entries) {
+            for (TimetableEntry e : entry) {
+                if(e != null){
+                    e.setAlarm(context);
+                }
+            }
         }
-        return colours.get(module);
+        //TODO testing
+        setTestAlarm();
+        //TODO end testing
+        Toast.makeText(this, "Alarms set", Toast.LENGTH_LONG).show();
+    }
+
+    //TODO remove this
+    private void setTestAlarm() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.add(Calendar.MINUTE, 1);
+
+        AlarmManager alarmManager = (AlarmManager)getApplicationContext().getSystemService(
+                Context.ALARM_SERVICE
+        );
+
+        tEntry = new TimetableEntry(
+                "0867284", 0, 4, 1, "CS4084", "LEC", "NA", "CSG001",
+                ContextCompat.getColor(this, R.color.tt_background_colour_0)
+        );
+        tEntry.setAlarm(this);
+
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.putExtra(getString(R.string.timetable_entry_info_key), tEntry);
+
+        intent.setAction(getString(R.string.timetable_alarm_set_action));
+        intent.addCategory(getString(R.string.alarm_category));
+        PendingIntent pIntent = PendingIntent.getBroadcast(
+                this, 0, intent, 0
+        );
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pIntent);
     }
 
     private class DayListAdapter extends ArrayAdapter<TimetableEntry>{
@@ -139,16 +132,12 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
             this.context = context;
         }
 
-
-
-        //TODO create a class for a timetable entry and get this thing to use it properly
         @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             EntryHolder holder;
             System.out.println("In getView");
             View row = convertView;
-
 
             if (row == null) {
                 LayoutInflater inflater =
@@ -166,23 +155,25 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
             }
 
             TimetableEntry item = getItem(position);
-            int duration = item.getDuration();
             int minHeight = getMinHeight();
-            row.setMinimumHeight(minHeight * duration);
 
-            if(item.getId().equals("")){
+            if(item == null){
+                row.setMinimumHeight(minHeight);
                 row.setVisibility(View.GONE);
             }else{
+                int duration = item.getDuration();
+                row.setMinimumHeight(minHeight * duration);
+
+
                 holder.module.setText(item.getModule());
                 holder.type.setText(item.getType());
                 holder.group.setText(item.getGroup());
                 holder.room.setText(item.getRoom());
 
                 GradientDrawable shape = (GradientDrawable)row.getBackground();
-                shape.setColor(getResources().getColor(item.getColour()));
+                shape.setColor(ContextCompat.getColor(context, item.getColour()));
                 row.setBackground(shape);
             }
-
             row.setTag(holder);
             return row;
         }
@@ -200,4 +191,5 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
         TextView group;
         TextView room;
     }
+
 }
