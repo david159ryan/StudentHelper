@@ -6,7 +6,8 @@ import java.util.regex.Pattern;
 
 /**
  * Created by Dave on 13/04/2017.
- *
+ * Uses Patterns and Matcher to extract different parts of timetable data from
+ * HTML Strings and returns the data in CSV for.
  */
 
 class TimetableHTMLParser {
@@ -72,7 +73,6 @@ class TimetableHTMLParser {
     }
 
     static String parseTimetableEntry(String html){
-
         String result;
         List<String> times = parseTime(html);
         result = times.get(0) + "," + times.get(1) + "," +

@@ -13,7 +13,6 @@ public class AlertDialogActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         if(getIntent().getBooleanExtra(getString(R.string.app_exit_key), false)){
             finish();
-            System.out.println("should finish here");
             return;
         }
         setContentView(R.layout.activity_alert_dialog);
@@ -36,17 +35,27 @@ public class AlertDialogActivity extends AppCompatActivity {
             }
         });
         final AlertDialog alert = dialog.create();
+        alert.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                onBackPressed();
+            }
+        });
         alert.show();
     }
 
     @Override
     public void onBackPressed() {
         //startActivity(new Intent(null, LoginActivity.class));
-        Intent a = new Intent(this.getApplicationContext(), AlertDialogActivity.class);
-        finish();
-        a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP );
-        a.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        a.putExtra(getString(R.string.app_exit_key), true);
-        startActivity(a);
+        if(isTaskRoot()){
+            Intent a = new Intent(this.getApplicationContext(), AlertDialogActivity.class);
+            finish();
+            a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP );
+            a.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            a.putExtra(getString(R.string.app_exit_key), true);
+            startActivity(a);
+        } else{
+            super.onBackPressed();
+        }
     }
 }

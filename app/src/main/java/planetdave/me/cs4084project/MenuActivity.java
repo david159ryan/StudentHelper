@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Vibrator;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,24 +16,30 @@ import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
+/**
+ * Main Menu activity. App opens directly here if user is logged in.
+ */
 public class MenuActivity extends AppCompatActivity implements ListView.OnItemClickListener{
+
+    /**
+     * Enum that defines Menu items. Provides the button label and Activity to launch
+     */
     private enum MenuItems {
         SULIS("Sulis", SulisActivity.class),
         TIMETABLE("Timetable", TimetableActivity.class);
 
         private String text;
-
-
         private Class activity;
+
+        /**
+         * MenuItems constructor
+         * @param text Menu item label
+         * @param activity Activity to launch
+         */
         MenuItems(String text, Class activity){
             this.text = text;
             this.activity = activity;
@@ -49,31 +54,40 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
         }
     }
 
+    private Toolbar toolbar;
+    private ArrayList<String> menuItemsList;
+    private ArrayAdapter<String> mMenuListAdapter;
+    private ListView mMenuListView;
+
     private SharedPreferences sPrefs;
     private DatabaseHelper db;
     private PopulateDatabaseTask dbTask;
+    private String currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
 
         sPrefs = getSharedPreferences(getString(R.string.shared_preferences),
                 MODE_PRIVATE);
 
+        currentUser = sPrefs.getString(getString(R.string.current_user_key),
+                getString(R.string.no_current_user));
+
         db = new DatabaseHelper(getApplicationContext());
 
-        if(!sPrefs.getBoolean(getString(R.string.database_present), false)){
+        /* Inserts database entries into database if not present */
+        if(!db.containsUser(currentUser)){
             dbTask = new PopulateDatabaseTask();
             dbTask.execute();
         }
 
-        ArrayList<String> menuItemsList;
-        ArrayAdapter<String> mMenuListAdapter;
-        ListView mMenuListView;
+
 
         menuItemsList = new ArrayList<>();
 
@@ -101,6 +115,7 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
 
         String titles[] = {"_id","_day", "_start", "_end", "_module", "_type", "_group", "_room"};
 
+        database.execSQL("INSERT INTO users VALUES ('" + currentUser + "')");
         for(String s : studentData){
             String values[] = s.split(",");
             // cv.put("id", sPrefs.getString(getString(R.string.current_user_key), ""));
@@ -109,8 +124,7 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
             }
             database.insert("timetable", "_id", cv);
         }
-        sPrefs.edit().putBoolean(getString(R.string.database_present), true).apply();
-        System.out.println(Arrays.toString(studentData.toArray(new String[0])));
+        db.close();
     }
 
     @Override
@@ -135,21 +149,47 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            sPrefs.edit().putString(getString(R.string.current_user_key),
-                    getString(R.string.no_current_user)).apply();
+            closeOptionsMenu();
+
+            sPrefs.edit()
+                    .putString(getString(R.string.current_user_key), getString(R.string.no_current_user))
+                    .putBoolean(getString(R.string.alarms_set_key), false)
+                    .apply();
+
+            /* Cancel current user's alarms */
+            List<TimetableEntry> entries[] = TimetableEntryRetriever
+                    .getTimetableEntries(getApplicationContext());
+            for(List<TimetableEntry> day : entries){
+                for(TimetableEntry entry : day){
+                    if(entry != null){
+                        entry.cancelAlarm();
+                    }
+                }
+            }
+
+            finish();
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            finish();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        menuItemsList = null;
+        mMenuListAdapter = null;
+        mMenuListView = null;
+        toolbar.dismissPopupMenus();
+        toolbar = null;
+
+        super.onDestroy();
     }
 
     private class PopulateDatabaseTask extends AsyncTask<Void, Void, Boolean>{
@@ -163,6 +203,12 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
+            dbTask = null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
             dbTask = null;
         }
     }

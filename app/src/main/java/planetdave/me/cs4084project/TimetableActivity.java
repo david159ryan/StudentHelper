@@ -29,18 +29,11 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
     //TODO remove this
     TimetableEntry tEntry;
 
-    public static int currentColour = 0;
-    private static final int NUM_DAYS = 5;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timetable);
 
-
-
-        //getScreenDimensions();
         SharedPreferences sPrefs = getSharedPreferences(getString(R.string.shared_preferences),
                 MODE_PRIVATE);
 
@@ -77,8 +70,6 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
 
     private void setAlarms(List<TimetableEntry>[] entries) {
         Context context = TimetableActivity.this;
-
-
         for (List<TimetableEntry> entry : entries) {
             for (TimetableEntry e : entry) {
                 if(e != null){
@@ -104,7 +95,7 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
 
         tEntry = new TimetableEntry(
                 "0867284", 0, 4, 1, "CS4084", "LEC", "NA", "CSG001",
-                ContextCompat.getColor(this, R.color.tt_background_colour_0)
+                TimetableEntryRetriever.getModuleColour("CS4084", this)
         );
         tEntry.setAlarm(this);
 
@@ -133,45 +124,44 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
         public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             EntryHolder holder;
             System.out.println("In getView");
-            View row = convertView;
 
-            if (row == null) {
+            if (convertView == null) {
                 LayoutInflater inflater =
-                        (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                row = inflater.inflate(R.layout.layout_timetable_entry, parent, false);
+                        (LayoutInflater) context.getSystemService(
+                                Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.layout_timetable_entry, parent, false);
 
                 holder = new EntryHolder();
-                holder.module = (TextView)row.findViewById(R.id.tt_entry_module);
-                holder.type = (TextView)row.findViewById(R.id.tt_entry_type);
-                holder.group = (TextView)row.findViewById(R.id.tt_entry_group);
-                holder.room = (TextView)row.findViewById(R.id.tt_entry_room);
+                holder.module = (TextView)convertView.findViewById(R.id.tt_entry_module);
+                holder.type = (TextView)convertView.findViewById(R.id.tt_entry_type);
+                holder.group = (TextView)convertView.findViewById(R.id.tt_entry_group);
+                holder.room = (TextView)convertView.findViewById(R.id.tt_entry_room);
+                TimetableEntry item = getItem(position);
+                int minHeight = getMinHeight();
 
+                if(item == null){
+                    convertView.setMinimumHeight(minHeight);
+                    convertView.setVisibility(View.GONE);
+                }else{
+                    int duration = item.getDuration();
+                    convertView.setMinimumHeight(minHeight * duration);
+
+
+                    holder.module.setText(item.getModule());
+                    holder.type.setText(item.getType());
+                    holder.group.setText(item.getGroup());
+                    holder.room.setText(item.getRoom());
+
+                    GradientDrawable shape = (GradientDrawable)convertView.getBackground();
+                    shape.setColor(ContextCompat.getColor(context, item.getColour()));
+                    convertView.setBackground(shape);
+                }
             }else{
                 holder = (EntryHolder)convertView.getTag();
             }
 
-            TimetableEntry item = getItem(position);
-            int minHeight = getMinHeight();
-
-            if(item == null){
-                row.setMinimumHeight(minHeight);
-                row.setVisibility(View.GONE);
-            }else{
-                int duration = item.getDuration();
-                row.setMinimumHeight(minHeight * duration);
-
-
-                holder.module.setText(item.getModule());
-                holder.type.setText(item.getType());
-                holder.group.setText(item.getGroup());
-                holder.room.setText(item.getRoom());
-
-                GradientDrawable shape = (GradientDrawable)row.getBackground();
-                shape.setColor(ContextCompat.getColor(context, item.getColour()));
-                row.setBackground(shape);
-            }
-            row.setTag(holder);
-            return row;
+            convertView.setTag(holder);
+            return convertView;
         }
 
         private int getMinHeight() {

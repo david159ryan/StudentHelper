@@ -30,10 +30,16 @@ import java.util.List;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 /**
- * A login screen that offers login via email/password.
+ * LoginActivity.java - Login Screen and entry point for Application
+ * @author David Ryan
+ * Requests a valid University of Limerick Student ID. Displays a number
+ * of error messages if an invalid ID is entered.
  */
 public class LoginActivity extends AppCompatActivity {
 
+    /**
+     * Enum containing various responses from ID submission
+     */
     private enum InputStatus {
         OK(0),
         TOO_LONG(R.string.error_invalid_username_long),
@@ -54,79 +60,97 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private DatabaseHelper db;
+    private String currentUser;
+
+    /** Shared Preference keys **/
     private static String userKey;
     private static String noUser;
     private static String firstRun;
-    private static String databasePresent;
-    private static String userSetKey;
     private static String alarmsSet;
+    //private static String databasePresent;
 
+    /** Min and Max ID lengths **/
     private static final int ID_MIN_LENGTH = 7;
     private static final int ID_MAX_LENGTH = 8;
 
-    // UI references.
+    /** UI References **/
     private TextView mTextInputView;
     private ProgressBar mProgressBar;
     private Button mSignInButton;
     private SharedPreferences sPrefs;
 
-    FetchStudentTimetableTask task = null;
-
+    /** Task variable a Asynchronously grab user's timetable data **/
+    private FetchStudentTimetableTask task = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getIntent().getBooleanExtra(getString(R.string.app_exit_key), false)){
+
+        /* Does another activity wish for us to quit the application? */
+        if (getIntent().getBooleanExtra(getString(R.string.app_exit_key), false)) {
             finish();
             System.out.println("should finish here");
             return;
         }
         setContentView(R.layout.activity_login);
 
+        db = new DatabaseHelper(getApplicationContext());
+
+        /* Initialise key values */
         userKey = getString(R.string.current_user_key);
         noUser = getString(R.string.no_current_user);
         firstRun = getString(R.string.first_run);
-        databasePresent = getString(R.string.database_present);
-        userSetKey = getString(R.string.users_set_key);
         alarmsSet = getString(R.string.alarms_set_key);
+        //databasePresent = getString(R.string.database_present);
 
 
         sPrefs = getSharedPreferences(getString(R.string.shared_preferences),
                 MODE_PRIVATE);
+        currentUser = sPrefs.getString(userKey, noUser);
 
-        System.out.println("current user: " + sPrefs.getString(userKey, "fail"));
-        if(sPrefs.getBoolean(firstRun, true)) {
+        /* If first run */
+        if (sPrefs.getBoolean(firstRun, true)) {
             initPrefs();
+            /* Initialise database asynchronously */
             AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void... params) {
-                    DatabaseHelper db = new DatabaseHelper(getApplicationContext());
                     db.getReadableDatabase();
                     return true;
                 }
             };
             task.execute();
-        } else if(!sPrefs.getString(userKey, noUser).equals(noUser)){
-            launchMenuActivity();
-            finish();
+        } else if (!currentUser.equals(noUser)) {
+            /* user has logged in previously */
+            launchMenuActivity(currentUser);
+            return;
         }
-
         mSignInButton = (Button) findViewById(R.id.sign_in_button);
         mSignInButton.setOnClickListener(new SignInClickListener());
-
-        mTextInputView = (TextView)findViewById(R.id.student_id_auto_text_view);
-        mProgressBar = (ProgressBar)findViewById(R.id.login_progressBar);
+        mTextInputView = (TextView) findViewById(R.id.student_id_auto_text_view);
+        mProgressBar = (ProgressBar) findViewById(R.id.login_progressBar);
         mProgressBar.setEnabled(false);
+
     }
 
+    /**
+     * Initialise Preferences
+     */
     private void initPrefs() {
-        sPrefs.edit().putString(userKey, noUser).apply();
-        sPrefs.edit().putBoolean(firstRun, false).apply();
-        sPrefs.edit().putBoolean(databasePresent, false).apply();
-        sPrefs.edit().putBoolean(alarmsSet, false).apply();
-        //sPrefs.edit().putStringSet()
+        sPrefs.edit()
+                .putString(userKey, noUser)
+                .putBoolean(firstRun, false)
+                .putBoolean(alarmsSet, false)
+                //.putBoolean(databasePresent, false)
+                .apply();
     }
 
+    /**
+     * Checks if student ID is valid
+     * @param id ID to validate
+     * @return Status indicating result of validation
+     */
     private InputStatus checkIDStatus(String id) {
         String idRegex = "^[0-9]{"+ID_MIN_LENGTH+","+ID_MAX_LENGTH+"}$";
 
@@ -149,22 +173,20 @@ public class LoginActivity extends AppCompatActivity {
         }
         return status;
     }
-/*
-    @Override
-    public void onBackPressed() {
-        Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
-    }
-*/
+
+
+    /**
+     * Disable UI and display spinning circle while validating ID
+     */
     private void enableProgressBar() {
         mProgressBar.setEnabled(true);
         mProgressBar.setVisibility(View.VISIBLE);
         mSignInButton.setClickable(false);
         mTextInputView.setEnabled(false);
     }
-
+    /**
+     * Hide spinning circle and enable UI
+     */
     private void disableProgressBar() {
         mProgressBar.setEnabled(false);
         mProgressBar.setVisibility(View.INVISIBLE);
@@ -172,38 +194,79 @@ public class LoginActivity extends AppCompatActivity {
         mTextInputView.setEnabled(true);
     }
 
+    /**
+     * Launch Menu and pass new user ID and their timetable data
+     * @param id validated student ID
+     * @param tableEntries retrieved timetable data
+     */
     private void launchMenuActivity(String id, ArrayList<String> tableEntries){
-        sPrefs.edit().putString(getString(R.string.current_user_key), id).apply();
+        if(mTextInputView != null){
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(mTextInputView.getWindowToken(), 0);
+        }
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mTextInputView.getWindowToken(), 0);
+        sPrefs.edit()
+                .putString(getString(R.string.current_user_key), id)
+                //.putBoolean(databasePresent, false)
+                .apply();
         Intent intent = getMenuActivityIntent();
         String dataKey = getString(R.string.student_timetable_data_key);
         intent.putExtra(dataKey,tableEntries);
+        finish();
         startActivity(intent);
     }
 
+    /**
+     * Launch Menu without passing data. Used when a user is still logged in
+     */
+    private void launchMenuActivity(String id){
+        if(mTextInputView != null){
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(mTextInputView.getWindowToken(), 0);
+        }
+        sPrefs.edit()
+                //.putBoolean(databasePresent, true)
+                .putString(userKey, id)
+                .apply();
+        Intent intent = getMenuActivityIntent();
+        finish();
+        startActivity(intent);
+    }
+
+    /**
+     * Returns an intent to launch Menu activity
+     * @return intent prepared for launching MenuActivity
+     */
     private Intent getMenuActivityIntent() {
         Intent intent = new Intent(this, MenuActivity.class);
         intent.setFlags(FLAG_ACTIVITY_NEW_TASK);
         return intent;
     }
 
-    private void launchMenuActivity(){
-        Intent intent = getMenuActivityIntent();
-        startActivity(intent);
-    }
-
+    /**
+     * Sign in button click listener
+     */
     private class SignInClickListener implements OnClickListener {
         @Override
         public void onClick(View v) {
             String id = mTextInputView.getText().toString();
-            InputStatus iDStatus = checkIDStatus(id);
-            System.out.println("button clicked, ID is: " + id + "\nValid ID?\t" + iDStatus);
-            if(iDStatus != InputStatus.OK){
-                mTextInputView.setError(getString(iDStatus.getCode()));
-                mTextInputView.invalidate();
+
+            if(db.containsUser(id)){
+                launchMenuActivity(id);
+            }else{
+                InputStatus iDStatus = checkIDStatus(id);
+                if(iDStatus != InputStatus.OK){
+                    mTextInputView.setError(getString(iDStatus.getCode()));
+                    mTextInputView.invalidate(); /* invalidate to redraw view with error message */
+                }
             }
         }
     }
 
+    /**
+     * Attempts to connect to UL timetable site and retrieve user's timetable
+     */
     private class FetchStudentTimetableTask extends AsyncTask<Void, Void, Boolean>{
         private String studentID;
         private String url;
@@ -211,9 +274,12 @@ public class LoginActivity extends AppCompatActivity {
         private ArrayList<String> tableEntries;
         private InputStatus requestStatus;
 
+        /**
+         * Task constructor
+         * @param studentID ID of student to retrieve timetable for
+         */
         FetchStudentTimetableTask(String studentID){
             this.studentID = studentID;
-            System.out.println("in task constructor: " + studentID);
             url = getResources().getString(R.string.timetable_url);
             requestStatus = InputStatus.OK;
         }
@@ -237,9 +303,10 @@ public class LoginActivity extends AppCompatActivity {
                 e.printStackTrace();
                 requestStatus = InputStatus.WEBSITE_UNREACHABLE;
                 cancel(true);
+                return false;
             }
+
             tableEntries = grabTimeTableEntries();
-            //System.out.println(Arrays.toString(tableEntries.toArray(new String[0])));
             if(tableEntries.size() == 0){
                 requestStatus = InputStatus.UNREGISTERED;
             }
@@ -248,21 +315,21 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-
             if (success) {
-                finish();
                 launchMenuActivity(studentID, tableEntries);
-
             }else{
                 reportRequestFailure();
             }
             task = null;
         }
 
+        /**
+         * Displays detected failure and returns UI control
+         */
         private void reportRequestFailure(){
             mTextInputView.setError(getString(requestStatus.getCode()));
-            disableProgressBar();
             mTextInputView.requestFocus();
+            disableProgressBar();
             ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
                     .showSoftInput(mTextInputView, InputMethodManager.SHOW_IMPLICIT);
         }
@@ -270,8 +337,13 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onCancelled() {
             reportRequestFailure();
+            task = null;
         }
 
+        /**
+         * Checks if an active internet connection is available
+         * @return true if connection available, otherwise false
+         */
         private boolean isNetworkAvailable() {
             ConnectivityManager connectivityManager
                     = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -279,6 +351,10 @@ public class LoginActivity extends AppCompatActivity {
             return activeNetworkInfo != null && activeNetworkInfo.isConnected();
         }
 
+        /**
+         * Turns retrieved HTML into something useful
+         * @return timetable entries in CSV list
+         */
         private ArrayList<String> grabTimeTableEntries(){
             ArrayList<String> tableEntries = new ArrayList<>();
             Element lastRow = doc.getElementsByTag("tr").last();

@@ -42,6 +42,9 @@ public class AlarmReceiver extends BroadcastReceiver{
     private void upcomingAlarmReceived(Context context, Intent intent) {
         Bundle b = intent.getExtras();
         TimetableEntry e = b.getParcelable(context.getString(R.string.timetable_entry_info_key));
+        if (e == null ){
+            return;
+        }
         System.out.println("broadcast received");
         Toast.makeText(context, "alarm broadcast received", Toast.LENGTH_LONG).show();
         Intent resultIntent = new Intent(context, TimetableEntryInfoActivity.class);
@@ -50,7 +53,7 @@ public class AlarmReceiver extends BroadcastReceiver{
                 context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT
         );
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                .setContentTitle(e.getStartTime() + " : " + e.getModule() + " : " + e.getRoom())
+                .setContentTitle(e.getModule() + " " + e.getType() + " starting in 15 minutes")
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setAutoCancel(true)
                 .setVibrate(new long[] {0, 1000, 200,1000 })

@@ -16,14 +16,15 @@ import static android.content.Context.MODE_PRIVATE;
  *
  */
 
-public final class TimetableEntryRetriever {
+final class TimetableEntryRetriever {
 
     private static int currentColour = 0;
-    public static int NUM_DAYS = 5;
+    static int NUM_DAYS = 5;
+    static Map<String, Integer> colours = new HashMap<>();
+
 
     @SuppressWarnings("unchecked")
     static List<TimetableEntry>[] getTimetableEntries(Context context) {
-        Map<String, Integer> colours = new HashMap<>();
 
         SharedPreferences sPrefs = context.getSharedPreferences(
                 context.getString(R.string.shared_preferences),
@@ -54,7 +55,7 @@ public final class TimetableEntryRetriever {
                 String type = c.getString(c.getColumnIndex("_type"));
                 String group = c.getString(c.getColumnIndex("_group"));
                 String room = c.getString(c.getColumnIndex("_room"));
-                int color = getModuleColour(module, colours, context);
+                int color = getModuleColour(module, context);
                 while(startTime < start){
                     //entries[day].add(new TimetableEntry());
                     entries[day].add(null);
@@ -69,13 +70,12 @@ public final class TimetableEntryRetriever {
             c.close();
         }
         db.close();
-
+        currentColour = 0;
         return entries;
     }
 
 
-    static int getModuleColour(String module, Map<String, Integer> colours,
-                                      Context context){
+    static int getModuleColour(String module, Context context){
         if(!colours.containsKey(module)){
             colours.put(module, context.getResources().getIdentifier(
                     ("tt_background_colour_" + currentColour),

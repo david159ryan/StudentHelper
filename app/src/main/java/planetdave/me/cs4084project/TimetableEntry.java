@@ -2,6 +2,7 @@ package planetdave.me.cs4084project;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
@@ -17,7 +18,7 @@ import java.util.Calendar;
  *
  */
 
-public class TimetableEntry implements Parcelable{
+class TimetableEntry implements Parcelable{
 
     private AlarmManager alarmManager = null;
     private PendingIntent pIntent = null;
@@ -33,11 +34,6 @@ public class TimetableEntry implements Parcelable{
     private String room;
     private int colour;
 
-    TimetableEntry(){
-        id = "";
-        duration = 1;
-    }
-
     TimetableEntry(@NonNull String id, int day, int startTime, int duration,
                    @NonNull String module, @NonNull  String type, @NonNull String group,
                    @NonNull String room, int color) {
@@ -52,7 +48,7 @@ public class TimetableEntry implements Parcelable{
         this.colour = color;
     }
 
-    protected TimetableEntry(Parcel in) {
+    private TimetableEntry(Parcel in) {
         id          = in.readString();
         startTime   = in.readInt();
         day         = in.readInt();
@@ -76,12 +72,12 @@ public class TimetableEntry implements Parcelable{
         }
     };
 
-    public int getDay() {
+    int getDay() {
         return day;
     }
 
     @NonNull
-    public String getId() {
+    String getId() {
         return id;
     }
 
@@ -89,33 +85,32 @@ public class TimetableEntry implements Parcelable{
         return startTime;
     }
 
-    public int getDuration() {
+    int getDuration() {
         return duration;
     }
     @NonNull
-    public String getModule() {
+    String getModule() {
         return module;
     }
 
     @NonNull
-    public String getType() {
+    String getType() {
         return type;
     }
 
     @NonNull
-    public String getGroup() {
+    String getGroup() {
         return group;
     }
 
     @NonNull
-    public String getRoom() {
+    String getRoom() {
         return room;
     }
 
-    public int getColour() {
+    int getColour() {
         return colour;
     }
-
 
     public boolean shouldActivateAlarm(){
         return shouldActivateAlarm;
@@ -143,7 +138,7 @@ public class TimetableEntry implements Parcelable{
         dest.writeInt(colour);
     }
 
-    public void setAlarm(Context context) {
+    void setAlarm(Context context) {
         if(alarmManager == null){
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
@@ -166,17 +161,33 @@ public class TimetableEntry implements Parcelable{
             intent.setAction(context.getString(R.string.timetable_alarm_set_action));
             intent.addCategory(context.getString(R.string.alarm_category));
             pIntent = PendingIntent.getBroadcast(
-                    context, 0, intent, 0
+                    context.getApplicationContext(), day * 100 + startTime, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
             );
+            System.out.println(day * 100 + startTime);
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                     AlarmManager.INTERVAL_DAY * 7, pIntent);
 
         }
     }
 
-    public void cancelAlarm(){
+    void cancelAlarm(){
         if(alarmManager != null){
             alarmManager.cancel(pIntent);
         }
+    }
+
+    @Override
+    public String toString(){
+
+        return "id: " + id + "\n" +
+                "module: " + module + "\n" +
+                "start: " + startTime + "\n" +
+                "day: " + day + "\n" +
+                "type: " + type + "\n" +
+                "group: " + group + "\n"+
+                "room: " + room + "\n" +
+                "color: " + colour + "\n";
+
     }
 }

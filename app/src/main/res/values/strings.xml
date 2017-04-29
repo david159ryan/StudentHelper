@@ -31,7 +31,6 @@
     <string name="error_network_unavailable">No internet connection</string>
 
     <string name="timetable_url">"http://www.timetable.ul.ie/tt2.asp"</string>
-    <string name="title_activity_test_login">Test Sign in</string>
 
     <!-- Bundle key values -->
     <string name="student_timetable_data_key">data</string>
@@ -39,7 +38,8 @@
     <!-- Menu values -->
     <string name="menu_header">UL Student Helper</string>
     <string name="menu_logout">Logout</string>
-
+    <string name="menu_sulis_button_label">Sulis</string>
+    <string name="menu_sulis_button_timetable">Timetable</string>
 
     <!-- Sulis Values -->
     <string name="sulis_url">https://sulis.ul.ie/portal/pda/?force.login=yes</string>

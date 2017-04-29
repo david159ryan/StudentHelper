@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Vibrator;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -55,9 +56,7 @@ public class TimetableEntryInfoActivity extends AppCompatActivity {
 
         LinearLayout layout = (LinearLayout)getWindow().getDecorView()
                 .findViewById(R.id.te_info_layout);
-        layout.setBackgroundColor(getResources().getColor(t.getColour()));
-        //shape.setColor(t.getColour());
-        //getWindow().getDecorView().setBackground(shape);
+        layout.setBackgroundColor(ContextCompat.getColor(this, t.getColour()));
 
         TextView day = (TextView)findViewById(R.id.te_textview_day);
         TextView code = (TextView)findViewById(R.id.te_textview_code);
