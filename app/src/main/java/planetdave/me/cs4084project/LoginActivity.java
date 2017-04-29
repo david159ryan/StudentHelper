@@ -72,8 +72,16 @@ public class LoginActivity extends AppCompatActivity {
 
     FetchStudentTimetableTask task = null;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(getIntent().getBooleanExtra(getString(R.string.app_exit_key), false)){
+            finish();
+            System.out.println("should finish here");
+            return;
+        }
+        setContentView(R.layout.activity_login);
 
         userKey = getString(R.string.current_user_key);
         noUser = getString(R.string.no_current_user);
@@ -82,8 +90,6 @@ public class LoginActivity extends AppCompatActivity {
         userSetKey = getString(R.string.users_set_key);
         alarmsSet = getString(R.string.alarms_set_key);
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
         sPrefs = getSharedPreferences(getString(R.string.shared_preferences),
                 MODE_PRIVATE);

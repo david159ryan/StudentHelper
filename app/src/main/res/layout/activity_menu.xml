@@ -13,7 +13,6 @@
     <ListView
         android:id="@+id/menu_list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/darker_gray"
-        android:clickable="true" />
+        android:clickable="true"
+        android:layout_height="match_parent" />
 </LinearLayout>

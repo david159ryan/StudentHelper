@@ -79,17 +79,20 @@ public class AlarmReceiver extends BroadcastReceiver{
     }
 
     private void silenceAlarmReceived(Context context) {
-        AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-        int previousWringerMode = audioManager.getRingerMode();
-        audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
 
         Intent intent = new Intent(context, AlertDialogActivity.class);
         intent.putExtra(context.getString(R.string.alert_dialog_title_key),
                 context.getString(R.string.alert_dialog_title));
         intent.putExtra(context.getString(R.string.alert_dialog_message_key),
                 context.getString(R.string.alert_dialog_silence));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(intent);
+
+        AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
+        int previousWringerMode = audioManager.getRingerMode();
+        audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+
         setUnSilenceAlarm(context, previousWringerMode);
     }
 
@@ -109,18 +112,21 @@ public class AlarmReceiver extends BroadcastReceiver{
     }
 
     private void unSilenceAlarmReceived(Context context, Intent intent) {
+
+        Intent newIntent = new Intent(context, AlertDialogActivity.class);
+        newIntent.putExtra(context.getString(R.string.alert_dialog_title_key),
+                context.getString(R.string.alert_dialog_title));
+        newIntent.putExtra(context.getString(R.string.alert_dialog_message_key),
+                context.getString(R.string.alert_dialog_un_silence));
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        context.startActivity(newIntent);
+
         int RINGER_MODE = intent.getIntExtra(context.getString(R.string.ringer_value_intent_key),
                 AudioManager.RINGER_MODE_NORMAL);
         AudioManager audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.setRingerMode(RINGER_MODE);
-
-        Intent newIntent = new Intent(context, AlertDialogActivity.class);
-        intent.putExtra(context.getString(R.string.alert_dialog_title_key),
-                context.getString(R.string.alert_dialog_title));
-        intent.putExtra(context.getString(R.string.alert_dialog_message_key),
-                context.getString(R.string.alert_dialog_silence));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(newIntent);
     }
 
 }

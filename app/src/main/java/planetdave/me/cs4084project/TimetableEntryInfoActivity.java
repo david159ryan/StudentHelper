@@ -1,5 +1,6 @@
 package planetdave.me.cs4084project;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -21,15 +22,22 @@ public class TimetableEntryInfoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_timetable_entry_info);
-
-        if (savedInstanceState != null){
+        if(getIntent().getBooleanExtra(getString(R.string.app_exit_key), false)){
+            finish();
+            System.out.println("should finish here");
             return;
         }
+        setContentView(R.layout.activity_timetable_entry_info);
+
+
         db = new DatabaseHelper(getApplicationContext());
         Bundle b = this.getIntent().getExtras();
         final TimetableEntry t = b.getParcelable(getString(R.string.timetable_entry_info_key));
 
+        if(t == null){
+            finish();
+            return;
+        }
 
         Cursor mCursor = db.getReadableDatabase().rawQuery("SELECT * FROM " +
                         getString(R.string.db_table_module_details) +
@@ -88,6 +96,7 @@ public class TimetableEntryInfoActivity extends AppCompatActivity {
         floor.setText(r.getFloor());
         room.setText(r.getRoom());
 
+        db.close();
         mCursor.close();
     }
 
@@ -97,11 +106,13 @@ public class TimetableEntryInfoActivity extends AppCompatActivity {
         vb.vibrate(100);
         if(this.isTaskRoot()){
             //startActivity(new Intent(null, LoginActivity.class));
-            Intent a = new Intent(Intent.ACTION_MAIN);
-            a.addCategory(Intent.CATEGORY_HOME);
-            a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(a);
+            System.out.println("in back pressed task root");
+            Intent a = new Intent(this.getApplicationContext(), TimetableEntryInfoActivity.class);
             finish();
+            a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP );
+            a.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            a.putExtra(getString(R.string.app_exit_key), true);
+            startActivity(a);
         }else{
             super.onBackPressed();
         }

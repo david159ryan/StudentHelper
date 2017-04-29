@@ -2,11 +2,9 @@ package planetdave.me.cs4084project;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
@@ -21,11 +19,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.util.ArrayList;
+
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TimetableActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
@@ -48,7 +44,7 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
         SharedPreferences sPrefs = getSharedPreferences(getString(R.string.shared_preferences),
                 MODE_PRIVATE);
 
-        List<TimetableEntry>[] entries = TimetableEntryRetriver.getTimetableEntries(this);
+        List<TimetableEntry>[] entries = TimetableEntryRetriever.getTimetableEntries(this);
 
         ListView dayLists[] = new ListView[5];
         for(int i = 0; i < dayLists.length; i++){

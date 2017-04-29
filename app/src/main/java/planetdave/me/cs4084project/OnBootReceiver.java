@@ -16,7 +16,7 @@ public class OnBootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        List<TimetableEntry> entries[] = TimetableEntryRetriver.getTimetableEntries(context);
+        List<TimetableEntry> entries[] = TimetableEntryRetriever.getTimetableEntries(context);
         for(List<TimetableEntry> day : entries){
             for(TimetableEntry entry : day){
                 if(entry != null) {

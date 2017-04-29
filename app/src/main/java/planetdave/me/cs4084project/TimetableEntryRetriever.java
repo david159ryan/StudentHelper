@@ -16,7 +16,7 @@ import static android.content.Context.MODE_PRIVATE;
  *
  */
 
-public final class TimetableEntryRetriver {
+public final class TimetableEntryRetriever {
 
     private static int currentColour = 0;
     public static int NUM_DAYS = 5;
