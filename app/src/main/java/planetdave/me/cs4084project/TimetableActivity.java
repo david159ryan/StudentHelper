@@ -20,14 +20,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Calendar;
 import java.util.List;
 
 public class TimetableActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
 
-
-    //TODO remove this
-    TimetableEntry tEntry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,17 +73,14 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
                 }
             }
         }
-        //TODO testing
-       // setTestAlarm();
-        //TODO end testing
+        //setTestAlarm();
         Toast.makeText(this, "Alarms set", Toast.LENGTH_LONG).show();
     }
-
-    //TODO remove this
+/*
     private void setTestAlarm() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.add(Calendar.MINUTE, 1);
+        //calendar.add(Calendar.MINUTE, 1);
 
         AlarmManager alarmManager = (AlarmManager)getApplicationContext().getSystemService(
                 Context.ALARM_SERVICE
@@ -108,8 +101,9 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
                 this, 0, intent, 0
         );
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pIntent);
-    }
 
+    }
+*/
     private class DayListAdapter extends ArrayAdapter<TimetableEntry>{
 
         private Context context;

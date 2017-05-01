@@ -35,12 +35,14 @@ public class AlarmReceiver extends BroadcastReceiver{
         bundle = intent.getExtras();
         entry = bundle.getParcelable(context.getString(R.string.timetable_entry_info_key));
 
-        if (action.equals(alarmAction)) {
-            upcomingAlarmReceived(context, intent);
-        } else if (action.equals(silenceAction)) {
-            silenceAlarmReceived(context);
-        } else if (action.equals(unSilenceAction)) {
-            unSilenceAlarmReceived(context, intent);
+        if(entry != null){
+            if (action.equals(alarmAction)) {
+                upcomingAlarmReceived(context, intent);
+            } else if (action.equals(silenceAction)) {
+                silenceAlarmReceived(context);
+            } else if (action.equals(unSilenceAction)) {
+                unSilenceAlarmReceived(context, intent);
+            }
         }
     }
 
@@ -49,14 +51,15 @@ public class AlarmReceiver extends BroadcastReceiver{
         if (entry == null ){
             return;
         }
-        Toast.makeText(context, "alarm broadcast received", Toast.LENGTH_LONG).show();
+        //Toast.makeText(context, "alarm broadcast received", Toast.LENGTH_LONG).show();
         Intent resultIntent = new Intent(context, TimetableEntryInfoActivity.class);
         resultIntent.putExtras(bundle);
         PendingIntent notificationIntent = PendingIntent.getActivity(
                 context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT
         );
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                .setContentTitle(entry.getModule() + " " + entry.getType() + " starting in 15 minutes")
+                .setContentTitle(entry.getModule() + " " + entry.getType() + " : " + entry.getRoom())
+                .setContentText("starts in 15 minutes")
                 .setSmallIcon(R.mipmap.ic_student_helper)
                 .setAutoCancel(true)
                 .setVibrate(new long[] {0, 1000, 200,1000 })
@@ -79,6 +82,7 @@ public class AlarmReceiver extends BroadcastReceiver{
         AlarmManager alarmManager = (AlarmManager)context.getApplicationContext()
                 .getSystemService(Context.ALARM_SERVICE);
         Intent newIntent = new Intent(context, AlarmReceiver.class);
+        newIntent.putExtra(context.getString(R.string.timetable_entry_info_key), entry);
         newIntent.setAction(silenceAction);
         PendingIntent pIntent = PendingIntent.getBroadcast(context,
                 SILENCE_CODE, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -107,6 +111,8 @@ public class AlarmReceiver extends BroadcastReceiver{
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.add(Calendar.MINUTE, entry.getDuration() * 60 - 10);
+       // calendar.add(Calendar.MINUTE, entry.getDuration());
+
         //calendar.add(Calendar.MINUTE, 1);
 
         AlarmManager alarmManager = (AlarmManager)context.getApplicationContext()
@@ -114,6 +120,7 @@ public class AlarmReceiver extends BroadcastReceiver{
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.setAction(unSilenceAction);
         intent.putExtra(context.getString(R.string.ringer_value_intent_key), previousWringerMode);
+        intent.putExtra(context.getString(R.string.timetable_entry_info_key), entry);
         PendingIntent pIntent = PendingIntent.getBroadcast(context,
                 SILENCE_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pIntent);
