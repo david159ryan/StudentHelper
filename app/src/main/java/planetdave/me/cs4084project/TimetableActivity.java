@@ -78,7 +78,7 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
             }
         }
         //TODO testing
-        setTestAlarm();
+       // setTestAlarm();
         //TODO end testing
         Toast.makeText(this, "Alarms set", Toast.LENGTH_LONG).show();
     }
@@ -123,7 +123,7 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
         @Override
         public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             EntryHolder holder;
-            System.out.println("In getView");
+
 
             if (convertView == null) {
                 LayoutInflater inflater =
@@ -171,6 +171,7 @@ public class TimetableActivity extends AppCompatActivity implements AdapterView.
         }
 
     }
+
     private static class EntryHolder{
         TextView module;
         TextView type;

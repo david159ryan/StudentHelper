@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
+/**
+ * Displays information about a module
+ */
 public class ModuleInfoActivity extends AppCompatActivity {
 
     @SuppressWarnings("deprecation")

@@ -1,6 +1,5 @@
 package planetdave.me.cs4084project;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -8,13 +7,16 @@ import android.os.Vibrator;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
+/**
+ * Retrieves and displays the information for a module
+ */
 public class TimetableEntryInfoActivity extends AppCompatActivity {
 
     DatabaseHelper db;
@@ -23,9 +25,14 @@ public class TimetableEntryInfoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        String days[] = getResources().getStringArray(R.array.days_long);
+        /* if this activity is launched by a notification while the app isn't running,
+         * this activity will relaunch itself with a clear activity stack and then immediately
+         * finish
+         */
         if(getIntent().getBooleanExtra(getString(R.string.app_exit_key), false)){
             finish();
-            System.out.println("should finish here");
             return;
         }
         setContentView(R.layout.activity_timetable_entry_info);
@@ -33,13 +40,17 @@ public class TimetableEntryInfoActivity extends AppCompatActivity {
 
         db = new DatabaseHelper(getApplicationContext());
         Bundle b = this.getIntent().getExtras();
+
+        /* retrieve timetable entry to display */
         final TimetableEntry t = b.getParcelable(getString(R.string.timetable_entry_info_key));
 
+        /* disaster! */
         if(t == null){
             finish();
             return;
         }
 
+        /* retrieves the module information */
         Cursor mCursor = db.getReadableDatabase().rawQuery("SELECT * FROM " +
                         getString(R.string.db_table_module_details) +
                         " WHERE " + getString(R.string.db_module_id) + " = '" +
@@ -52,13 +63,16 @@ public class TimetableEntryInfoActivity extends AppCompatActivity {
                         getString(R.string.db_module_title)
                 )
         );
-        Room r = new Room(t.getRoom(), db);
+
+
+        Room r = new Room(t.getRoom(), this);
 
         LinearLayout layout = (LinearLayout)getWindow().getDecorView()
                 .findViewById(R.id.te_info_layout);
         layout.setBackgroundColor(ContextCompat.getColor(this, t.getColour()));
 
         TextView day = (TextView)findViewById(R.id.te_textview_day);
+        TextView time = (TextView)findViewById(R.id.te_textview_time);
         TextView code = (TextView)findViewById(R.id.te_textview_code);
         TextView title = (TextView)findViewById(R.id.te_textview_title);
         TextView type = (TextView)findViewById(R.id.te_textview_type);
@@ -69,6 +83,7 @@ public class TimetableEntryInfoActivity extends AppCompatActivity {
         TextView room = (TextView)findViewById(R.id.te_textview_room_num);
 
         Button details = (Button)findViewById(R.id.te_button_details);
+
         String colorName = getResources().getResourceName(t.getColour());
         int buttonColor = getResources().getIdentifier(colorName + "_light", "color",
                 getPackageName());
@@ -85,7 +100,10 @@ public class TimetableEntryInfoActivity extends AppCompatActivity {
             }
         });
 
-        day.setText(getString(R.string.tt_mon_long + t.getDay()));
+        String timeString = t.getStartTime() + ":00";
+
+        day.setText(days[t.getDay()]);
+        time.setText(timeString);
         code.setText(t.getModule());
         title.setText(moduleTitle);
         type.setText(t.getType());
@@ -105,7 +123,6 @@ public class TimetableEntryInfoActivity extends AppCompatActivity {
         vb.vibrate(100);
         if(this.isTaskRoot()){
             //startActivity(new Intent(null, LoginActivity.class));
-            System.out.println("in back pressed task root");
             Intent a = new Intent(this.getApplicationContext(), TimetableEntryInfoActivity.class);
             finish();
             a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP );

@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
+import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -28,13 +29,14 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 import java.io.File;
 
-
+/**
+ * This class loads the SULIS webstie in
+ */
 public class SulisActivity extends AppCompatActivity {
     private long mDownloadedFileID;
     private DownloadManager dm;
     private boolean bSulisDirectoryExists;
     private WebView webview;
-
 
     //// TODO: 16/04/2017 handle more than just PDFs
 
@@ -72,7 +74,7 @@ public class SulisActivity extends AppCompatActivity {
 
         webview.setDownloadListener(new DownloadListener() {
             public void onDownloadStart(String url, String userAgent,
-                                        String contentDisposition, String mimeType,
+                                        String contentDisposition, final String mimeType,
                                         long contentLength) {
 
                 handleDownload(url, userAgent, contentDisposition, mimeType, contentLength);
@@ -80,7 +82,10 @@ public class SulisActivity extends AppCompatActivity {
                     public void onReceive(Context ctxt, Intent intent) {
                         Uri mostRecentDownload =
                                 dm.getUriForDownloadedFile(mDownloadedFileID);
-                        launchPdfActivity(mostRecentDownload.toString());
+                        if(MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
+                                .equals("pdf")){
+                            launchPdfActivity(mostRecentDownload.toString());
+                        }
                     }
                 };
                 registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
@@ -88,22 +93,31 @@ public class SulisActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Get filepath to Sulis Directory
+     * @return file path for Sulis Folder
+     */
     String getSulisDirectory(){
         return Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOCUMENTS) + getString(R.string.sulis_directory);
     }
 
+    /**
+     * Lunches PDF activity and passes the path to a PDF file to open
+     * @param target path to PDF to read
+     */
     void launchPdfActivity(String target) {
         Intent i = new Intent(SulisActivity.this, PDFReaderActivity.class);
         i.putExtra(getString(R.string.pdf_key), target);
         startActivity(i);
     }
 
+    /* Modified code found on StackOverflow */
     private void handleDownload(String url, String userAgent, String contentDisposition,
                                 String mimeType, long contentLength) {
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
 
-        /* got most of this from stackoverflow */
+        /* got most of this from StackOverflow */
         request.setMimeType(mimeType);
         //------------------------COOKIE!!------------------------
         String cookies = CookieManager.getInstance().getCookie(url);
@@ -116,16 +130,20 @@ public class SulisActivity extends AppCompatActivity {
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         if(bSulisDirectoryExists){
             request.setDestinationInExternalPublicDir(
-                    Environment.DIRECTORY_DOCUMENTS,            /* Documents Folder */
-                    getString(R.string.sulis_directory) +       /* Sulis Sub Dir */
+                    Environment.DIRECTORY_DOCUMENTS,    /* Documents Folder */
+                    getString(R.string.sulis_directory) +           /* Sulis Sub Dir */
                             URLUtil.guessFileName(url, contentDisposition, mimeType));
-            System.out.println(getSulisDirectory() + " : " + bSulisDirectoryExists);
         }
         dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         mDownloadedFileID = dm.enqueue(request);
         Toast.makeText(getApplicationContext(), "Downloading File", Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Checks if the application has External Write permission, if not requests it from
+     * the user.
+     * @return true if permission exists or is granted. False is user denies access
+     */
     private boolean checkAndRequestExternalPermissions() {
         int permissionCheck = ContextCompat.checkSelfPermission(SulisActivity.this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -179,13 +197,11 @@ class SulisWebViewClient extends WebViewClient {
                 File fileCheck = new File(parent.getSulisDirectory(), uri.getLastPathSegment());
                 /* Check if file exists, if so launch it in PDFReaderActivity */
                 if(fileCheck.exists()){
-                    System.out.println("file exists");
                     parent.launchPdfActivity(fileCheck.getAbsolutePath());
                     shouldOverride = true;
                 }
             }
         }
-        System.out.println("should override? " + shouldOverride);
         return shouldOverride;
     }
 }

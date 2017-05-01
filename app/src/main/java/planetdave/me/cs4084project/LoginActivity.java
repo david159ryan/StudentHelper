@@ -296,16 +296,19 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
+                /* Uses JSoup library */
                 doc = Jsoup.connect(url)
                         .data("T1", studentID)
                         .post();
             } catch (IOException e) {
                 e.printStackTrace();
+                /* set error message */
                 requestStatus = InputStatus.WEBSITE_UNREACHABLE;
                 cancel(true);
                 return false;
             }
 
+            /* no will return empty list if ID isn't registered */
             tableEntries = grabTimeTableEntries();
             if(tableEntries.size() == 0){
                 requestStatus = InputStatus.UNREGISTERED;

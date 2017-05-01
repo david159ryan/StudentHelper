@@ -6,9 +6,10 @@ import android.database.Cursor;
 /**
  * Created by David on 26/04/2017.
  *
+ * Looks up a module code from the pre-populated module_details table
+ * and stores the information in a useful format
  */
-
-public class ModuleInfo {
+class ModuleInfo {
 
     private String code;
     private String title;
@@ -17,17 +18,27 @@ public class ModuleInfo {
     private Context context;
     private DatabaseHelper db;
 
-    public ModuleInfo(String code, Context context) {
+
+    /**
+     * Constructor
+     * @param code module
+     * @param context context
+     */
+    ModuleInfo(String code, Context context) {
         this.code = code;
         this.context = context;
-        db = new DatabaseHelper(context);
         parseCode();
     }
 
+    /**
+     * Queries the database for the details of the provided module and stores result
+     * in the classes data members
+     */
     private void parseCode() {
         String query =  "SELECT * FROM " + context.getString(R.string.db_table_module_details) +
                 " WHERE " + context.getString(R.string.db_module_id) + " = '" + code + "';";
 
+        db = new DatabaseHelper(context);
         Cursor c = db.getReadableDatabase().rawQuery(query, null);
         c.moveToFirst();
         title = c.getString(c.getColumnIndex(context.getString(R.string.db_module_title)));
@@ -35,21 +46,38 @@ public class ModuleInfo {
                 R.string.db_module_description)));
         lecturer = c.getString(c.getColumnIndex(context.getString(R.string.db_module_lecturer)));
         c.close();
+        db.close();
     }
 
-    public String getTitle() {
+    /**
+     * Returns module title
+     * @return module title
+     */
+    String getTitle() {
         return title;
     }
 
-    public String getDescription() {
+    /**
+     * Returns module description
+     * @return module description
+     */
+    String getDescription() {
         return description;
     }
 
-    public String getLecturer() {
+    /**
+     * Returns modules Lecturer
+     * @return module lecturer, if known
+     */
+    String getLecturer() {
         return lecturer;
     }
 
-    public String getCode() {
+    /**
+     * Returns module code
+     * @return module code
+     */
+    String getCode() {
         return code;
     }
 }

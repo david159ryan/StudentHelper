@@ -1,5 +1,6 @@
 package planetdave.me.cs4084project;
 
+import android.content.Context;
 import android.database.Cursor;
 
 import java.util.regex.Matcher;
@@ -7,23 +8,30 @@ import java.util.regex.Pattern;
 
 /**
  * Created by David on 26/04/2017.
+ * Interprets a room code and extracts the building, floor and room number
  */
-
-public class Room {
+class Room {
     private String code;
     private String building;
     private String buildingCode;
     private String floor;
     private String room;
-    private DatabaseHelper db;
 
-    public Room(String roomCode, DatabaseHelper db){
+    /**
+     * Constructor
+     * @param roomCode room code
+     */
+    Room(String roomCode, Context context){
         this.code = roomCode;
-        this.db = db;
-        readFloorAndBuilding();
+        readFloorAndBuilding(context);
     }
 
-    private void readFloorAndBuilding(){
+    /**
+     * Extracts useful data from room code and stores them in data members
+     * @param context context for database initialisation
+     */
+    private void readFloorAndBuilding(Context context){
+        DatabaseHelper db = new DatabaseHelper(context.getApplicationContext());
         String buildingCodePatternString = "^(KB)|([A-Z]{1})|([A-Z]{2})|([A-Z]{3})";
         String floorPatternString = "[G0BM123]{1}";
         String roomNumberPatternString = "[0-9]{1,3}[A-Z]?$";
@@ -46,6 +54,7 @@ public class Room {
                     null);
             c.moveToFirst();
             building = c.getString(0);
+            c.close();
         }
 
         m = floorNumPattern.matcher(code);
@@ -57,41 +66,29 @@ public class Room {
         if(m.find()){
             room = m.group();
         }
+        db.close();
     }
 
-    public String getCode() {
+    String getCode() {
         return code;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
 
-    public String getBuilding() {
+    String getBuilding() {
         return building;
     }
 
-    public void setBuilding(String building) {
-        this.building = building;
-    }
 
-    public String getFloor() {
+    String getFloor() {
         return floor;
     }
 
-    public void setFloor(String floor) {
-        this.floor = floor;
-    }
-
-    public String getBuildingCode() {
+    String getBuildingCode() {
         return buildingCode;
     }
 
-    public String getRoom() {
+    String getRoom() {
         return room;
     }
 
-    public void setRoom(String room) {
-        this.room = room;
-    }
 }

@@ -81,7 +81,7 @@ class TimetableEntry implements Parcelable{
         return id;
     }
 
-    public int getStartTime() {
+    int getStartTime() {
         return startTime;
     }
 
@@ -138,6 +138,10 @@ class TimetableEntry implements Parcelable{
         dest.writeInt(colour);
     }
 
+    /**
+     * Sets an alarm to go off 15 minutes before class starts
+     * @param context context
+     */
     void setAlarm(Context context) {
         if(alarmManager == null){
             Calendar calendar = Calendar.getInstance();
@@ -146,7 +150,8 @@ class TimetableEntry implements Parcelable{
             calendar.set(Calendar.HOUR_OF_DAY, startTime - 1);
             calendar.set(Calendar.MINUTE, 45);
 
-            if(calendar.getTimeInMillis() < System.currentTimeMillis() - AlarmManager.INTERVAL_HOUR){
+            /* if alarm time is in the past, set it for next week */
+            if(calendar.getTimeInMillis() < System.currentTimeMillis()){
                 calendar.add(Calendar.WEEK_OF_YEAR, 1);
             }
 
@@ -154,27 +159,36 @@ class TimetableEntry implements Parcelable{
                     Context.ALARM_SERVICE
             );
 
-            System.out.println(calendar.getTime().toString());
-
             Intent intent = new Intent(context, AlarmReceiver.class);
             intent.putExtra(context.getString(R.string.timetable_entry_info_key), this);
             intent.setAction(context.getString(R.string.timetable_alarm_set_action));
             intent.addCategory(context.getString(R.string.alarm_category));
-            pIntent = PendingIntent.getBroadcast(
+            pIntent = PendingIntent.getBroadcast(   /* unique response code */
                     context.getApplicationContext(), day * 100 + startTime, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT
             );
-            System.out.println(day * 100 + startTime);
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                     AlarmManager.INTERVAL_DAY * 7, pIntent);
-
         }
     }
 
-    void cancelAlarm(){
-        if(alarmManager != null){
-            alarmManager.cancel(pIntent);
+    void cancelAlarm(Context context){
+        if(alarmManager == null){
+            alarmManager = (AlarmManager)context.getApplicationContext().getSystemService(
+                    Context.ALARM_SERVICE
+            );
         }
+        if(pIntent == null){
+            Intent intent = new Intent(context, AlarmReceiver.class);
+            intent.putExtra(context.getString(R.string.timetable_entry_info_key), this);
+            intent.setAction(context.getString(R.string.timetable_alarm_set_action));
+            intent.addCategory(context.getString(R.string.alarm_category));
+            pIntent = PendingIntent.getBroadcast(   /* unique response code */
+                    context.getApplicationContext(), day * 100 + startTime, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            );
+        }
+        alarmManager.cancel(pIntent);
     }
 
     @Override

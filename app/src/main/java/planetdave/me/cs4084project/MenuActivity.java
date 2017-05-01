@@ -88,13 +88,11 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
         }
 
 
-
+        /* Populates list with MenuItems enum members */
         menuItemsList = new ArrayList<>();
-
         for(MenuItems m : MenuItems.values()){
             menuItemsList.add(m.getText());
         }
-        //dataStuff();
 
         mMenuListView = (ListView)findViewById(R.id.menu_list_view);
         mMenuListView.setClickable(true);
@@ -106,19 +104,21 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
         mMenuListView.setOnItemClickListener(this);
     }
 
+    /**
+     * Adds a newly logged in user's ID and timetable entries to the database
+     */
     private void populateDatabase() {
         String dataKey = getString(R.string.student_timetable_data_key);
+        String titles[] = {"_id","_day", "_start", "_end", "_module", "_type", "_group", "_room"};
+
         SQLiteDatabase database = db.getWritableDatabase();
         ArrayList<String> studentData = getIntent().getExtras().getStringArrayList(dataKey);
-        assert studentData != null;
+        assert studentData != null; /* this line is here to prevent a warning */
         ContentValues cv = new ContentValues();
-
-        String titles[] = {"_id","_day", "_start", "_end", "_module", "_type", "_group", "_room"};
 
         database.execSQL("INSERT INTO users VALUES ('" + currentUser + "')");
         for(String s : studentData){
             String values[] = s.split(",");
-            // cv.put("id", sPrefs.getString(getString(R.string.current_user_key), ""));
             for(int i = 0; i < titles.length; i++){
                 cv.put(titles[i], values[i]);
             }
@@ -143,6 +143,9 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Vibrator vb = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
         vb.vibrate(100);
+
+        /* finds the MenuItems entry associated with the clicked listItem and
+         * passes in the associated activity    */
         Intent i = new Intent(this, MenuItems.values()[position].getActivity());
         startActivity(i);
     }
@@ -152,13 +155,9 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
 
         int id = item.getItemId();
 
+        /* if logout option selected */
         if (id == R.id.action_settings) {
             closeOptionsMenu();
-
-            sPrefs.edit()
-                    .putString(getString(R.string.current_user_key), getString(R.string.no_current_user))
-                    .putBoolean(getString(R.string.alarms_set_key), false)
-                    .apply();
 
             /* Cancel current user's alarms */
             List<TimetableEntry> entries[] = TimetableEntryRetriever
@@ -166,11 +165,17 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
             for(List<TimetableEntry> day : entries){
                 for(TimetableEntry entry : day){
                     if(entry != null){
-                        entry.cancelAlarm();
+                        entry.cancelAlarm(this);
                     }
                 }
             }
+            /* indicate alarms are unset and no user is logged in */
+            sPrefs.edit()
+                    .putString(getString(R.string.current_user_key), getString(R.string.no_current_user))
+                    .putBoolean(getString(R.string.alarms_set_key), false)
+                    .apply();
 
+            /* finish, clear activity stack and launch LoginActivity */
             finish();
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -179,17 +184,6 @@ public class MenuActivity extends AppCompatActivity implements ListView.OnItemCl
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onDestroy() {
-        menuItemsList = null;
-        mMenuListAdapter = null;
-        mMenuListView = null;
-        toolbar.dismissPopupMenus();
-        toolbar = null;
-
-        super.onDestroy();
     }
 
     private class PopulateDatabaseTask extends AsyncTask<Void, Void, Boolean>{

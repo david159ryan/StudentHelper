@@ -12,7 +12,6 @@
 
     <string name="database_name">shdb.db</string>
 
-
     <!-- Strings related to login -->
     <string name="prompt_student_id">Enter Student ID</string>
     <string name="action_sign_in">Sign in</string>
@@ -74,6 +73,16 @@
     <string name="tt_wed_long">Wednesday</string>
     <string name="tt_thu_long">Thursday</string>
     <string name="tt_fri_long">Friday</string>
+
+    <string-array
+        name="days_long">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+    </string-array>
+
 
     <!-- Timetable days short-->
     <string name="tt_mon_short">Mon</string>
